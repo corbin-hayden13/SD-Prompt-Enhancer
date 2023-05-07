@@ -34,4 +34,4 @@ Credit for v1.0 goes to [etcroot](https://github.com/etcroot) and [Dreamlabs](ht
    - Incorrect: "scripts/subdirectory/prompt_enhancer_tags.csv", "automatic/sd_prompt_enhancer.py"
 
 Thank you for using the Stable Diffusion Prompt Enhancer script!  As always please report any issues, concerns, and feature ideas on the model
-webpage - https://civitai.com/models/58869/sd-prompt-enhancer
+[webpage](https://civitai.com/models/58869/sd-prompt-enhancer)
