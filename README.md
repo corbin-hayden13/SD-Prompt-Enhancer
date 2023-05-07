@@ -5,7 +5,7 @@
  * Added button to add tags to the prompt textbox
  * Added some more default tags
 
-Credit for v1.0 goes to (etcroot)[https://github.com/etcroot] and (Dreamlabs)[https://civitai.com/user/Dreamlabs/models] for the original idea
+Credit for v1.0 goes to [etcroot](https://github.com/etcroot) and [Dreamlabs](https://civitai.com/user/Dreamlabs/models) for the original idea
 
 ## Welcome to the SD Prompt Enhancer script! Here to help you generate higher quality and more consistent images!
 
