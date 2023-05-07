@@ -25,9 +25,9 @@ Credit for v1.0 goes to [etcroot](https://github.com/etcroot) and [Dreamlabs](ht
    - Do NOT edit any of the values in row one, as those are the column headers and required to read the csv in python
 
 ### Installing the script will now be slightly more involved, but not by much.
- * BOTH sd_prompt_enhancer.py AND prompt_enhancer_tags.csv must be in the same directory / folder to work properly.
- * BOTH files must be placed within your "scripts" folder.  They will not work if they are in a folder within the "scripts" folder
-   - Correct: "scripts/sd_prompt_enhancer.py", "scripts/prompt_enhancer_tags.csv"
+ * Everything you download will go into your "scripts" folder.  You should see a "sd_prompt_enhancer.py" python file and a folder called "prompt_enhancer_tags".  The python file and the folder should be added to the scripts folder.
+ * The README.txt file from CivitAi for this project is incorrect regarding the installation process and structure, please disreagrd that.
+   - Correct: "scripts/sd_prompt_enhancer.py", "scripts/prompt_enhancer_tags/prompt_enhancer_tags.csv"
    - Incorrect: "scripts/subdirectory/prompt_enhancer_tags.csv", "automatic/sd_prompt_enhancer.py"
 
 Thank you for using the Stable Diffusion Prompt Enhancer script!  As always please report any issues, concerns, and feature ideas on the model
