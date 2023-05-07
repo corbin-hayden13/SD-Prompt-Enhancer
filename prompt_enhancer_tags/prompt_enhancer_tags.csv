@@ -1,0 +1,97 @@
+﻿Section,Multiselect,Category,Label,Tag
+Image Attributes,TRUE,styles,drawing,Drawing
+Image Attributes,TRUE,styles,painting,Painting
+Image Attributes,TRUE,styles,anime,Anime
+Image Attributes,TRUE,styles,CGI,CGI
+Image Attributes,TRUE,styles,3D,3D
+Image Attributes,TRUE,styles,realism,Realism
+Image Attributes,TRUE,styles,charcoal,Charcoal
+Image Attributes,TRUE,styles,oil,Oil Painting
+Image Attributes,TRUE,styles,manga,Manga
+Image Attributes,TRUE,styles,disney,"Disney, Disney Style"
+Image Attributes,TRUE,post processing,vfx,VFX
+Image Attributes,TRUE,post processing,fxaa,FXAA
+Image Attributes,TRUE,post processing,txaa,TXAA
+Image Attributes,TRUE,post processing,rtx,RTX
+Image Attributes,TRUE,post processing,ssao,SSAO
+Image Attributes,TRUE,post processing,shaders,Shaders
+Image Attributes,TRUE,post processing,denoise,Denoise
+Image Attributes,TRUE,post processing,cel shading,Cel Shading
+Image Attributes,TRUE,post processing,tone mapping,Tone Mapping
+Image Attributes,TRUE,post processing,ambient occlusion,Ambient Occlusion
+Image Attributes,TRUE,lighting,spotlight,Spotlight
+Image Attributes,TRUE,lighting,frontlight,Frontlight
+Image Attributes,TRUE,lighting,rim lights,"Rim Lights, Rim Lighting, Rim Light"
+Image Attributes,TRUE,lighting,edge lighting,Edge Lighting
+Image Attributes,TRUE,lighting,natural,Natural Lighting
+Image Attributes,TRUE,lighting,sunlight,Sunlight
+Image Attributes,TRUE,lighting,moonlight,Moonlight
+Image Attributes,TRUE,lighting,moody,Moody Lighting
+Image Attributes,TRUE,lighting,dramatic,Dramatic Lighting
+Image Attributes,TRUE,lighting,volumetric,"Volumetric Lighting, Volumetric Light, Volumetric"
+Image Attributes,TRUE,lighting,accent,Accent Lighting
+Image Attributes,TRUE,lighting,fluorescent,Fluorescent
+Image Attributes,TRUE,lighting,neon,"Neon Lights, Neon, Neon Lighting"
+Image Attributes,TRUE,extras,masterpiece,"((high quality:1.2, masterpiece:1.2))"
+Image Attributes,TRUE,extras,high resolution,"absurdres, high resolution"
+Image Attributes,TRUE,extras,8k,"(8k resolution), 8k, 8kres, 8k res"
+Image Attributes,TRUE,extras,detailed,"high details, detailed and intricate, intricate details, high intricate details, absurd amount of details"
+Image Attributes,TRUE,extras,super resolution,"super resolution, ultra hd, megapixel"
+Image Attributes,TRUE,extras,landscape,"landscape, outdoors"
+Image Attributes,TRUE,extras,portrait,"((upper body:1.2)), portrait"
+Image Attributes,TRUE,extras,black & white,"monochrome, greyscale, B&W, Black and White, black&white"
+Camera Settings,FALSE,camera shots,null,null
+Camera Settings,FALSE,camera shots,none,null
+Camera Settings,FALSE,camera shots,ews,Extreme Wide Shot
+Camera Settings,FALSE,camera shots,ls,Long Shot
+Camera Settings,FALSE,camera shots,ws,Wide Shot
+Camera Settings,FALSE,camera shots,mls,Medium Long Shot
+Camera Settings,FALSE,camera shots,mws,Medium Wide Shot
+Camera Settings,FALSE,camera shots,cowboy,Cowboy Shot
+Camera Settings,FALSE,camera shots,ms,Medium Shot
+Camera Settings,FALSE,camera shots,mcu,Medium Close Up
+Camera Settings,FALSE,camera shots,cu,Close Up
+Camera Settings,FALSE,camera shots,ecu,Extreme Close Up
+Camera Settings,FALSE,camera shots,est.,Establishing Shot
+Camera Settings,FALSE,camera framing,null,null
+Camera Settings,FALSE,camera framing,none,null
+Camera Settings,FALSE,camera framing,single,Single Shot
+Camera Settings,FALSE,camera framing,two,Two Shot
+Camera Settings,FALSE,camera framing,three,Three Shot
+Camera Settings,FALSE,camera framing,over the shoulder,Over-The-Shoulder Shot
+Camera Settings,FALSE,camera framing,pov,"Point of View Shot, POV"
+Camera Settings,FALSE,camera focus,null,null
+Camera Settings,FALSE,camera focus,none,null
+Camera Settings,FALSE,camera focus,rack / pull,"Rack Focus, Camera Pull Focus"
+Camera Settings,FALSE,camera focus,shallow,Shallow Focus
+Camera Settings,FALSE,camera focus,deep,Deep Focus
+Camera Settings,FALSE,camera focus,tilt-shift,Tilt-Shift Focus
+Camera Settings,FALSE,camera focus,soft,Soft Focus
+Camera Settings,FALSE,camera focus,split,Split Diopter
+Camera Settings,FALSE,camera angles,null,null
+Camera Settings,FALSE,camera angles,none,null
+Camera Settings,FALSE,camera angles,eye level,Eye Level Shot
+Camera Settings,FALSE,camera angles,low,Low Angle Shot
+Camera Settings,FALSE,camera angles,high,High Angle Shot
+Camera Settings,FALSE,camera angles,hip level,Hip Level Shot
+Camera Settings,FALSE,camera angles,knee level,Knee Level Shot
+Camera Settings,FALSE,camera angles,ground level,Ground Level Shot
+Camera Settings,FALSE,camera angles,shoulder level,Shoulder Level Shot
+Camera Settings,FALSE,camera angles,dutch angle,"dutch Angle Shot, Dutch Angle"
+Camera Settings,FALSE,camera angles,birds eye,"Birds Eye Shot, Overhead Shot"
+Camera Settings,FALSE,camera angles,aerial,"Aerial Shot, Helicopter Shot"
+Character Attributes,TRUE,face,eye shadow,"Eye Shadow, Makeup, Eyeliner"
+Character Attributes,TRUE,face,lip stick,"Red Lip Stick, Glossy Lip Stick, Lips"
+Character Attributes,TRUE,body,medium breasts,Medium Breasts
+Character Attributes,TRUE,body,small breasts,Small Breasts
+Character Attributes,TRUE,body,large breasts,Large Breasts
+Character Attributes,TRUE,body,muscles,"Muscular, Masc, Fit, Toned"
+Character Attributes,TRUE,accessories,necklace,"Necklace, Chain, Charm, Neck"
+Character Attributes,TRUE,accessories,bracelet,"Bracelet, Charm, Band, Wrist"
+Image Attributes,TRUE,styles,abstract,"Abstarct, Abstraction, Artistic"
+Camera Settings,FALSE,staging,full front,"Full Front Staging, Looking At Viewer, Face, Front"
+Camera Settings,FALSE,staging,quarter turn,"Quarter Turn Camera Staging, From Front, From Side"
+Camera Settings,FALSE,staging,left profile,"Profile Camera Staging, From Side, Looking Right"
+Camera Settings,FALSE,staging,right profile,"Profile Camera Staging, From Side, Looking Left"
+Camera Settings,FALSE,staging,three-quarter turn,"Three-Quarter Turn Camera Staging, From Side, From Behind, Looking Away From Viewer"
+Camera Settings,FALSE,staging,full back,"Full Back Camera Staging, From Behind, Looking Away From Viewer, Behind, Back"
