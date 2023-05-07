@@ -23,8 +23,7 @@ Credit for v1.0 goes to [etcroot](https://github.com/etcroot) and [Dreamlabs](ht
 
  * ALL TAGS MUST HAVE ALL ATTRIBUTES
    - Future releases will provide a client-side imterface to edit the database, but for now it can be edited manually
-   - Do your best to keep tags of the same category next to each other within the csv.  I haven't tested a messy tag environment, but I will
-     work on a more robust csv parser within the script to avoid potetial issues.
+   - Tags don't need to be contiguous / clumped together if they're in the same category or section, you can just add new tags to the end of the file
    - Do NOT edit any of the values in row one, as those are the column headers and required to read the csv in python
 
 ### Installing the script will now be slightly more involved, but not by much.
