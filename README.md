@@ -1,15 +1,32 @@
 # Stable Diffusion Prompt Enhancer v2.0
 ### Changelog
- * Added support for multiple tag csv files
- * Added template.csv to guide users in adding their own tags with the correct format
- * Added button to add tags to the prompt textbox
- * Added some more default tags
+ * Now an extension!
+   - Pull current prompt from txt2img and edit within the extension's ui tab
+   - Build enhanced prompt within new prompt textbox
+     - Button to update prompt based on original promt textbox and selected tags
+     - Button to send back to txt2img
+   - Tag Editor tab to add new tags via the webui
 
 Credit for v1.0 goes to [etcroot](https://github.com/etcroot) and [Dreamlabs](https://civitai.com/user/Dreamlabs/models) for the original idea
 
 ## Welcome to the SD Prompt Enhancer script! Here to help you generate higher quality and more consistent images!
 
 ### Things to know when adding your own tags:
+
+#### Adding via the webui
+
+ * In this extension release I have implemented the feature of adding tags to your current csv files from within the webui
+   - Limitations include:
+     - No option to add a custom section nor category within the UI (you can still manually add them)
+     - No option to delete tags from within the webui
+     - No option to create tables within the UI
+   - I plan to add features to remedy these limitations in the future
+ * When you press the add tag button, it will add the tag you created, it just will not visually indicate that you did.  I plan to make this more apparent in the future
+ * You have to restart the client side UI to display any added tags.
+ * If you get a permission error, you have to change your csv properties to disbale the "read-only" setting
+
+#### Manually adding tags
+
  * Tags have 5 attributes:
    - Section (string): This is the overall theme the tag belongs to, like "Camera Settings" or "Image Attributes"
    - Multiselect (binary/boolean): This is a TRUE/FALSE value that determines whether multiple tags from the same category can be applied to the prompt at once.  A camera setting for the different types of shots should be Multiselect: FALSE because it doesn't make sense to ask for both a "Cowboy Shot" and "Long Shot"
@@ -25,10 +42,15 @@ Credit for v1.0 goes to [etcroot](https://github.com/etcroot) and [Dreamlabs](ht
    - Do NOT edit any of the values in row one, as those are the column headers and required to read the csv in python
 
 ### Installing the script will now be slightly more involved, but not by much.
- * Everything you download will go into your "scripts" folder.  You should see a "sd_prompt_enhancer.py" python file and a folder called "prompt_enhancer_tags".  The python file and the folder should be added to the scripts folder.
- * The README.txt file from CivitAi for this project is incorrect regarding the installation process and structure, please disreagrd that.
-   - Correct: "scripts/sd_prompt_enhancer.py", "scripts/prompt_enhancer_tags/prompt_enhancer_tags.csv"
-   - Incorrect: "scripts/subdirectory/prompt_enhancer_tags.csv", "automatic/sd_prompt_enhancer.py"
+
+#### Installing via Extensions tab in webui
+
+ * You can now directly install this extension by copying and pasting the repo link into the option to install from link in your webui's extension tab
+ * I recommend you use this method to install the extension
+
+#### Manually adding files
+
+ * You can download the zip file from my CivitAi page (linked below).  Unzip that file and put the "SD-Prompt-Enhancer" folder right into your extensions folder in your local installation.  that's it!
 
 Thank you for using the Stable Diffusion Prompt Enhancer script!  As always please report any issues, concerns, and feature ideas on the model
 [webpage](https://civitai.com/models/58869/sd-prompt-enhancer)
