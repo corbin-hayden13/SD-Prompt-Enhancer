@@ -1,4 +1,5 @@
 import os
+import stat
 from random import shuffle
 
 import pandas as pd
@@ -159,22 +160,29 @@ def update_new_prompt(*args):
     return update_textbox(new_prompt, *args)
 
 
-def add_update_tags(*args):
+def add_update_tags(**kwargs):
     global database_dict, prompt_enhancer_dir
-    table_name = args[0]["label"]
+    table_name = kwargs[0]["label"]
     new_tag = {
-        "Section": args[1],
-        "Multiselect": args[3],
-        "Category": args[2],
-        "Label": args[4],
-        "Tag": args[5]
+        "Section":     [str(kwargs[1])],
+        "Multiselect": [str(kwargs[3])],
+        "Category":    [str(kwargs[2])],
+        "Label":       [str(kwargs[4])],
+        "Tag":         [str(kwargs[5])]
     }
+    print(f"new_tag = {new_tag}")
     temp_frame = pd.DataFrame(data=new_tag)
     database_dict[table_name] = concat([database_dict[table_name], temp_frame], axis=0, ignore_index=True)
-    with open(os.path.join(prompt_enhancer_dir, "prompt_enhancer_tags", table_name), "w") as csv:
-        database_dict[table_name].to_csv(path_or_buf=csv)
+    csv_path = os.path.join(prompt_enhancer_dir, "prompt_enhancer_tags", table_name)
+    print(f"path = {csv_path}")
+    try:
+        with open(csv_path, "w") as csv:
+            database_dict[table_name].to_csv(path_or_buf=csv, index=False)
+    except PermissionError as err:
+        print(err)
+        print("Failed to add tag to csv, see console for more information")
 
-    return [new_arg.update(value="") for new_arg in args]
+    return [new_arg.update(value="") for new_arg in kwargs]
 
 
 def on_ui_tabs():
