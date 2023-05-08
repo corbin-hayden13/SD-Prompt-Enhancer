@@ -218,27 +218,31 @@ def on_ui_tabs():
                     category_list = list(set(database["Category"]))
                     category_list.append("New Category")
                     if len(section_list) > 1:
-                        gr.Markdown(f"### Add new tags to {name}")
+                        gr.Markdown(f"### Edit {name}")
                         with gr.Row():
-                            with gr.Row(style={"flex":2}):
+                            with gr.Row(style={"flex": 2}):
                                 section_dropdown = gr.Dropdown(label=f"Section Dropdown", choices=section_list,
                                                                elem_id="section_dropdown", type="value",
                                                                multiselect=False, elem_classes="equal-width")
-                                category_dropdown = gr.Dropdown(label=f"Category Dropdown", choices=category_list,
+                                category_dropdown = gr.Dropdown(label=f"Category Dropdown",
+                                                                choices=category_list,
                                                                 elem_id="category_dropdown", type="value",
                                                                 multiselect=False, elem_classes="equal-width")
-                                multiselect_dropdown = gr.Dropdown(label=f"Multiselect Dropdown", choices=["true", "false"],
+                                multiselect_dropdown = gr.Dropdown(label=f"Multiselect Dropdown",
+                                                                   choices=["true", "false"],
                                                                    elem_id="multiselect_dropdown", type="value",
-                                                                   multiselect=False, elem_classes="equal-width")
-                            with gr.Row(style={"flex":2}):
-                                label_input = gr.Textbox(label="Create New Label", value="", elem_id="label_input",
+                                                                   multiselect=False,
+                                                                   elem_classes="equal-width")
+                            with gr.Row(style={"flex": 2}):
+                                label_input = gr.Textbox(label="Create New Label", value="",
+                                                         elem_id="label_input",
                                                          type="text", elem_classes="equal-width")
                                 tag_input = gr.Textbox(label="Create New Tag", value="", elem_id="tag_input",
                                                        type="text", elem_classes="equal-width")
-                            with gr.Row(style={"flex":1}):
+                            with gr.Row(style={"flex": 1}):
                                 make_tag_button = gr.Button(value="Create New Tag", elem_id="make_tag_button",
                                                             elem_classes="button-width")
-
+                        
     return [(sd_prompt_enhancer, "SD Prompt Enhancer", "sd_prompt_enhancer")]
 
 
