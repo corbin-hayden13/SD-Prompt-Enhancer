@@ -1,6 +1,8 @@
 import os
 from random import shuffle
 
+import pandas as pd
+
 import modules.scripts as scripts
 from modules.scripts import script_callbacks
 import gradio as gr
@@ -16,6 +18,7 @@ import numpy as np
 priorities = ["Prompt", "Random", "None"]
 # tags_dict = read_csv("PromptEnhancerScripts/prompt_enhancer_tags/prompt_enhancer_tags.csv", na_values=["null"]).replace("", np.nan)
 tags_dict = DataFrame()
+database_dict = {}
 pos_prompt_comp = None
 all_sections = []
 prompt_enhancer_dir = scripts.basedir()
@@ -65,12 +68,13 @@ class TagSection:
 
 
 def read_all_databases():
-    global database_file_path, tags_dict
+    global database_file_path, database_dict, tags_dict
 
     databases = []
     for file in os.listdir(database_file_path):
         if file.endswith(".csv"):
-            databases.append(read_csv(os.path.join(database_file_path, file), na_values=["null"]).replace("", np.nan))
+            database_dict[file] = read_csv(os.path.join(database_file_path, file), na_values=["null"]).replace("", np.nan)
+            databases.append(database_dict[file])
 
     return concat(databases, axis=0, ignore_index=True)
 
@@ -155,6 +159,24 @@ def update_new_prompt(*args):
     return update_textbox(new_prompt, *args)
 
 
+def add_update_tags(*args):
+    global database_dict, prompt_enhancer_dir
+    table_name = args[0]["label"]
+    new_tag = {
+        "Section": args[1],
+        "Multiselect": args[3],
+        "Category": args[2],
+        "Label": args[4],
+        "Tag": args[5]
+    }
+    temp_frame = pd.DataFrame(data=new_tag)
+    database_dict[table_name] = concat([database_dict[table_name], temp_frame], axis=0, ignore_index=True)
+    with open(os.path.join(prompt_enhancer_dir, "prompt_enhancer_tags", table_name), "w") as csv:
+        database_dict[table_name].to_csv(path_or_buf=csv)
+
+    return [new_arg.update(value="") for new_arg in args]
+
+
 def on_ui_tabs():
     global all_sections, pos_prompt_comp, num_extras, database_file_path, prompt_enhancer_dir
 
@@ -213,6 +235,7 @@ def on_ui_tabs():
                         )
 
                 for name, database in databases:
+                    name_label = gr.Label(value=name, visible=False)
                     section_list = list(set(database["Section"]))
                     section_list.append("New Section")
                     category_list = list(set(database["Category"]))
@@ -242,7 +265,12 @@ def on_ui_tabs():
                             with gr.Row(style={"flex": 1}):
                                 make_tag_button = gr.Button(value="Create New Tag", elem_id="make_tag_button",
                                                             elem_classes="button-width")
-                        
+
+                    make_tag_button.click(fn=add_update_tags, inputs=[name_label, section_dropdown, category_dropdown,
+                                                                      multiselect_dropdown, label_input, tag_input],
+                                          outputs=[name_label, section_dropdown, category_dropdown, multiselect_dropdown,
+                                                   label_input, tag_input])
+
     return [(sd_prompt_enhancer, "SD Prompt Enhancer", "sd_prompt_enhancer")]
 
 
