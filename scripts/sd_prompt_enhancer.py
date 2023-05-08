@@ -160,36 +160,34 @@ def update_new_prompt(*args):
     return update_textbox(new_prompt, *args)
 
 
-def add_update_tags(**kwargs):
+def add_update_tags(*args):
     global database_dict, prompt_enhancer_dir
-    table_name = kwargs[0]["label"]
+    updated_components = [args[0]]
+    table_name = args[0]["label"]
     new_tag = {
-        "Section":     [str(kwargs[1])],
-        "Multiselect": [str(kwargs[3])],
-        "Category":    [str(kwargs[2])],
-        "Label":       [str(kwargs[4])],
-        "Tag":         [str(kwargs[5])]
+        "Section":     [str(args[1])],
+        "Multiselect": [str(args[3])],
+        "Category":    [str(args[2])],
+        "Label":       [str(args[4])],
+        "Tag":         [str(args[5])]
     }
-    print(f"new_tag = {new_tag}")
     temp_frame = pd.DataFrame(data=new_tag)
     database_dict[table_name] = concat([database_dict[table_name], temp_frame], axis=0, ignore_index=True)
     csv_path = os.path.join(prompt_enhancer_dir, "prompt_enhancer_tags", table_name)
-    print(f"path = {csv_path}")
     try:
-        with open(csv_path, "w") as csv:
-            database_dict[table_name].to_csv(path_or_buf=csv, index=False)
+        with open(csv_path, mode="w+") as file:
+            database_dict[table_name].to_csv(path_or_buf=file, index=False)
+
     except PermissionError as err:
         print(err)
         print("Failed to add tag to csv, see console for more information")
-
-    return [new_arg.update(value="") for new_arg in kwargs]
 
 
 def on_ui_tabs():
     global all_sections, pos_prompt_comp, num_extras, database_file_path, prompt_enhancer_dir
 
     # custom_css = ".two-thirds{width:66.66% !important;}.one-third{width:33.33% !important;}"
-    css = "<style>.equal-width{flex: 2 !important;} .button-width{flex: 1 !important;}</style>"
+    css = ".equal-width{flex: 2 !important;} .button-width{flex: 1 !important;}"
     with gr.Blocks(analytics_enabled=False, css=css) as sd_prompt_enhancer:
         with gr.Tab(label="Prompt Enhancer"):
             gr.HTML("<br />")
@@ -275,9 +273,7 @@ def on_ui_tabs():
                                                             elem_classes="button-width")
 
                     make_tag_button.click(fn=add_update_tags, inputs=[name_label, section_dropdown, category_dropdown,
-                                                                      multiselect_dropdown, label_input, tag_input],
-                                          outputs=[name_label, section_dropdown, category_dropdown, multiselect_dropdown,
-                                                   label_input, tag_input])
+                                                                      multiselect_dropdown, label_input, tag_input])
 
     return [(sd_prompt_enhancer, "SD Prompt Enhancer", "sd_prompt_enhancer")]
 
