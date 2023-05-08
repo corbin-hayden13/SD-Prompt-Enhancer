@@ -14,12 +14,13 @@ import numpy as np
 # TODO Ability to share tag file
 
 priorities = ["Prompt", "Random", "None"]
-# tags_dict = read_csv("scripts/prompt_enhancer_tags/prompt_enhancer_tags.csv", na_values=["null"]).replace("", np.nan)
+# tags_dict = read_csv("PromptEnhancerScripts/prompt_enhancer_tags/prompt_enhancer_tags.csv", na_values=["null"]).replace("", np.nan)
 tags_dict = DataFrame()
 pos_prompt_comp = None
 all_sections = []
-database_file_path = "extensions/sd-prompt-enhancer/prompt_enhancer_tags"
-num_extras = 3
+prompt_enhancer_dir = scripts.basedir()
+database_file_path = os.path.join(prompt_enhancer_dir, "prompt_enhancer_tags")
+num_extras = 5
 
 
 class TagDict:
@@ -71,13 +72,13 @@ def read_all_databases():
         if file.endswith(".csv"):
             databases.append(read_csv(os.path.join(database_file_path, file), na_values=["null"]).replace("", np.nan))
 
-    tags_dict = concat(databases, axis=0, ignore_index=True)
+    return concat(databases, axis=0, ignore_index=True)
 
 
 def format_tag_database():
     global tags_dict, priorities
 
-    read_all_databases()
+    tags_dict = read_all_databases()
 
     section_name_list = []
     for a in range(len(tags_dict["Section"])):
@@ -130,21 +131,124 @@ def list_to_str(str_list):
     return ret_str[:len(ret_str) - 2] if ret_str != "" else ""
 
 
-def on_click(*args):
+def update_textbox(new_prompt, *args):
     global num_extras
-    pos_prompt_component = args[2]
-    prompt = pos_prompt_component
-    print(f"prompt = {prompt}")
-    arg_list = []
-    for arg in args:
-        arg_list.append(arg)
-    value = Script.handle_priority(prompt, arg_list, num_extras)
+    args_list = list(args)
+    value = PromptEnhancerScript.handle_priority(new_prompt, args_list, num_extras)
     return gr.Textbox().update(value=value)
 
 
-class Script(scripts.Script):
+def get_txt2img(prompt):
+    return gr.Textbox().update(value=prompt)
+
+
+def set_txt2img(*args):
+    global num_extras
+    new_prompt = args[5]
+    new_prompt = new_prompt.replace(" ,", "")
+    return gr.Textbox().update(value=new_prompt)
+
+
+def update_new_prompt(*args):
+    global num_extras
+    new_prompt = args[3]
+    return update_textbox(new_prompt, *args)
+
+
+def on_ui_tabs():
+    global all_sections, pos_prompt_comp, num_extras, database_file_path, prompt_enhancer_dir
+
+    # custom_css = ".two-thirds{width:66.66% !important;}.one-third{width:33.33% !important;}"
+    css = "<style>.equal-width{flex: 2 !important;} .button-width{flex: 1 !important;}</style>"
+    with gr.Blocks(analytics_enabled=False, css=css) as sd_prompt_enhancer:
+        with gr.Tab(label="Prompt Enhancer"):
+            gr.HTML("<br />")
+            with gr.Row():
+                curr_prompt_box = gr.Textbox(label="Your Prompt", elem_id="curr_prompt", value="", type="text")
+                get_curr_prompt_button = gr.Button(value="Get Txt2Img Prompt", elem_id="get_curr_prompt_button")
+                get_curr_prompt_button.click(fn=get_txt2img, inputs=pos_prompt_comp, outputs=curr_prompt_box)
+
+            with gr.Row():
+                new_prompt_box = gr.Textbox(label="New Prompt", elem_id="new_prompt", value="", type="text")
+                with gr.Row():
+                    apply_tags_button = gr.Button(value="Update New Prompt", elem_id="apply_tags_buttons")
+                    set_new_prompt_button = gr.Button(value="Set Txt2Img Prompt", elem_id="set_new_prompt_button")
+
+            gr.HTML("<br />")
+            with gr.Row():
+                with gr.Column():
+                    priority_radio = gr.Radio(label="Prioritize...", choices=priorities, elem_id="priorities",
+                                              type="value", value="None")
+
+                with gr.Column():
+                    add_prompt_button = gr.Button(value="Add Tags to Prompt", elem_id="add_prompt_button")
+
+            all_sections = format_tag_database()
+            ret_list = [priority_radio, add_prompt_button, pos_prompt_comp, curr_prompt_box, get_curr_prompt_button,
+                        new_prompt_box, set_new_prompt_button, apply_tags_button]
+            num_extras = len(ret_list)
+
+            for section in all_sections:
+                gr.HTML("<br />")
+                gr.HTML(f"<span><b>{section.name}</b></span>")
+                with gr.Row():
+                    for a in range(len(section)):  # Categories
+                        with gr.Row():
+                            temp_dropdown = gr.Dropdown(label=section[a].name, choices=section[a].keys(),
+                                                        elem_id=section[a].name, type="value",
+                                                        multiselect=section[a].multiselect)
+                        ret_list.append(temp_dropdown)
+
+            set_new_prompt_button.click(fn=set_txt2img, inputs=ret_list, outputs=pos_prompt_comp)
+            apply_tags_button.click(fn=update_new_prompt, inputs=ret_list, outputs=new_prompt_box)
+
+        with gr.Tab(label="Tag Editor"):
+            with gr.Column():
+                databases = []
+                for file in os.listdir(database_file_path):
+                    if file.endswith(".csv"):
+                        databases.append(
+                            (file,
+                             read_csv(os.path.join(database_file_path, file), na_values=["null"]).replace("", np.nan))
+                        )
+
+                for name, database in databases:
+                    section_list = list(set(database["Section"]))
+                    section_list.append("New Section")
+                    category_list = list(set(database["Category"]))
+                    category_list.append("New Category")
+                    if len(section_list) > 1:
+                        gr.Markdown(f"### Add new tags to {name}")
+                        with gr.Row():
+                            with gr.Row(style={"flex":2}):
+                                section_dropdown = gr.Dropdown(label=f"Section Dropdown", choices=section_list,
+                                                               elem_id="section_dropdown", type="value",
+                                                               multiselect=False, elem_classes="equal-width")
+                                category_dropdown = gr.Dropdown(label=f"Category Dropdown", choices=category_list,
+                                                                elem_id="category_dropdown", type="value",
+                                                                multiselect=False, elem_classes="equal-width")
+                                multiselect_dropdown = gr.Dropdown(label=f"Multiselect Dropdown", choices=["true", "false"],
+                                                                   elem_id="multiselect_dropdown", type="value",
+                                                                   multiselect=False, elem_classes="equal-width")
+                            with gr.Row(style={"flex":2}):
+                                label_input = gr.Textbox(label="Create New Label", value="", elem_id="label_input",
+                                                         type="text", elem_classes="equal-width")
+                                tag_input = gr.Textbox(label="Create New Tag", value="", elem_id="tag_input",
+                                                       type="text", elem_classes="equal-width")
+                            with gr.Row(style={"flex":1}):
+                                make_tag_button = gr.Button(value="Create New Tag", elem_id="make_tag_button",
+                                                            elem_classes="button-width")
+
+    return [(sd_prompt_enhancer, "SD Prompt Enhancer", "sd_prompt_enhancer")]
+
+
+class PromptEnhancerScript(scripts.Script):
     def title(self):
         return "SD Prompt Enhancer"  # Inspired by https://sd-prompt-builder.vercel.app
+
+    """ This EXACT function and syntax is required for self.processing to be called """
+    def show(self, is_img2img):
+        return scripts.AlwaysVisible
 
     def after_component(self, component, **kwargs):
         global pos_prompt_comp
@@ -154,40 +258,27 @@ class Script(scripts.Script):
         except KeyError:
             pass
 
-    def run(self, p, *args):
-        global all_sections, num_extras
-
-        priority = args[0]
-        button_output = args[1]
-
-        p.prompt = str(Script.handle_priority(p.prompt, args, num_extras))
-
-        return process_images(p)
-
-    # def process(self, p, *args):
-    #     return self.run(p, args)
-
     @staticmethod
     def handle_priority(prompt, args, num_extras):
         global priorities
         priority = args[0]
 
         if priority == priorities[0]:
-            return Script.prompt_priority(prompt, args, num_extras)
+            return PromptEnhancerScript.prompt_priority(prompt, args, num_extras)
         elif priority == priorities[len(priorities) - 2]:
-            return Script.randomize_prompt(prompt, args, num_extras)
+            return PromptEnhancerScript.randomize_prompt(prompt, args, num_extras)
         else:  # This satisfies both None and Arbitrary priorities
-            return Script.arbitrary_priority(prompt, args, num_extras, priority=priority)
+            return PromptEnhancerScript.arbitrary_priority(prompt, args, num_extras, priority=priority)
 
     @staticmethod
     def prompt_priority(prompt, args, num_extras):
         global all_sections
-        return "((" + prompt + ")), " + Script.parse_arbitrary_args(args, all_sections, num_extras)
+        return "((" + prompt + ")), " + PromptEnhancerScript.parse_arbitrary_args(args, all_sections, num_extras)
 
     @staticmethod
     def arbitrary_priority(prompt, args, num_extras, priority=None):
         global all_sections
-        return prompt + ", " + Script.parse_arbitrary_args(args, all_sections, num_extras, priority_section=priority)
+        return prompt + ", " + PromptEnhancerScript.parse_arbitrary_args(args, all_sections, num_extras, priority_section=priority)
 
     @staticmethod
     def parse_arbitrary_args(args, section_list, num_extras, is_random=False, priority_section=None) -> str:
@@ -220,45 +311,8 @@ class Script(scripts.Script):
         args_list = list(args)
         args_list.append(prompt_list)
 
-        return Script.parse_arbitrary_args(args_list, all_sections, num_extras, True)
+        return PromptEnhancerScript.parse_arbitrary_args(args_list, all_sections, num_extras, True)
 
 
-def broken_on_ui_tabs():
-    global all_sections, pos_prompt_comp
-    with gr.Blocks(analytics_enabled=False) as sd_prompt_enhancer:
-        gr.HTML("<br />")
-        with gr.Row():
-            with gr.Column():
-                priority_radio = gr.Radio(label="Prioritize...", choices=priorities, elem_id="priorities",
-                                          type="value", value="None")
-
-            with gr.Column():
-                test_button = gr.Button(value="Add Tags to Prompt", elem_id="testing button")
-
-        all_sections = format_tag_database()
-        ret_list = [priority_radio, test_button, pos_prompt_comp]
-
-        for section in all_sections:
-            gr.HTML("<br />")
-            gr.HTML(f"<span><b>{section.name}</b></span>")
-            with gr.Row():
-                for a in range(len(section)):  # Categories
-                    with gr.Row():
-                        temp_dropdown = gr.Dropdown(label=section[a].name, choices=section[a].keys(),
-                                                    elem_id=section[a].name, type="value",
-                                                    multiselect=section[a].multiselect)
-                    ret_list.append(temp_dropdown)
-
-        test_button.click(fn=on_click, inputs=ret_list, outputs=pos_prompt_comp)
-
-        """with gr.Row():
-            gr.HTML("<br />")
-            gr.HTML(f"<span><b>Add a new Tag</b></span>")"""
-
-    # return ret_list
-    print("Returning on callback...")
-    return [(sd_prompt_enhancer, "SD Prompt Enhancer", "sd_prompt_enhancer")]
-
-
-script_callbacks.on_ui_tabs(broken_on_ui_tabs)
+script_callbacks.on_ui_tabs(on_ui_tabs)
 
