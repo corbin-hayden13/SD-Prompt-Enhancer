@@ -1,5 +1,4 @@
 import os
-import stat
 from random import shuffle
 
 import pandas as pd
@@ -8,7 +7,6 @@ import modules.scripts as scripts
 from modules.scripts import script_callbacks
 import gradio as gr
 
-from modules.processing import process_images
 from pandas import read_csv, isna, concat, DataFrame
 import numpy as np
 
@@ -161,8 +159,7 @@ def update_new_prompt(*args):
 
 
 def add_update_tags(*args):
-    global database_dict, prompt_enhancer_dir
-    updated_components = [args[0]]
+    global database_dict, prompt_enhancer_dir, all_sections
     table_name = args[0]["label"]
     new_tag = {
         "Section":     [str(args[1])],
@@ -173,6 +170,7 @@ def add_update_tags(*args):
     }
     temp_frame = pd.DataFrame(data=new_tag)
     database_dict[table_name] = concat([database_dict[table_name], temp_frame], axis=0, ignore_index=True)
+    print(database_dict[table_name])
     csv_path = os.path.join(prompt_enhancer_dir, "prompt_enhancer_tags", table_name)
     try:
         with open(csv_path, mode="w+") as file:
@@ -181,6 +179,9 @@ def add_update_tags(*args):
     except PermissionError as err:
         print(err)
         print("Failed to add tag to csv, see console for more information")
+
+    all_sections = format_tag_database()
+    script_callbacks.on_ui_tabs(on_ui_tabs)
 
 
 def on_ui_tabs():
@@ -236,8 +237,8 @@ def on_ui_tabs():
                 for file in os.listdir(database_file_path):
                     if file.endswith(".csv"):
                         databases.append(
-                            (file,
-                             read_csv(os.path.join(database_file_path, file), na_values=["null"]).replace("", np.nan))
+                            (file, read_csv(os.path.join(database_file_path, file),
+                                            na_values=["null"]).replace("", np.nan))
                         )
 
                 for name, database in databases:
