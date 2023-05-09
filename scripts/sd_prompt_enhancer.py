@@ -170,18 +170,35 @@ def add_update_tags(*args):
     }
     temp_frame = pd.DataFrame(data=new_tag)
     database_dict[table_name] = concat([database_dict[table_name], temp_frame], axis=0, ignore_index=True)
-    print(database_dict[table_name])
     csv_path = os.path.join(prompt_enhancer_dir, "prompt_enhancer_tags", table_name)
     try:
         with open(csv_path, mode="w+") as file:
             database_dict[table_name].to_csv(path_or_buf=file, index=False)
 
     except PermissionError as err:
-        print(err)
         print("Failed to add tag to csv, see console for more information")
+        print(err)
 
-    all_sections = format_tag_database()
-    script_callbacks.on_ui_tabs(on_ui_tabs)
+
+def set_relevant_categories(curr_section):
+    global all_sections
+
+    relevant_categories = []
+    for tag_section in all_sections:
+        if tag_section.name == curr_section:
+            for a in range(len(tag_section)):
+                relevant_categories.append(tag_section[a].name)
+
+    return gr.Dropdown().update(choices=relevant_categories)
+
+
+def set_category_multiselect(curr_category):
+    global tags_dict
+    for a in range(len(tags_dict["Category"])):
+        if tags_dict["Category"][a] == curr_category:
+            return gr.Dropdown().update(value=str(tags_dict["Multiselect"][a]).lower())
+
+    return gr.Dropdown().update(value="")
 
 
 def on_ui_tabs():
@@ -275,6 +292,10 @@ def on_ui_tabs():
 
                     make_tag_button.click(fn=add_update_tags, inputs=[name_label, section_dropdown, category_dropdown,
                                                                       multiselect_dropdown, label_input, tag_input])
+                    section_dropdown.change(fn=set_relevant_categories, inputs=section_dropdown,
+                                            outputs=category_dropdown)
+                    category_dropdown.change(fn=set_category_multiselect, inputs=category_dropdown,
+                                             outputs=multiselect_dropdown)
 
     return [(sd_prompt_enhancer, "SD Prompt Enhancer", "sd_prompt_enhancer")]
 
