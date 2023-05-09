@@ -1,0 +1,10 @@
+# Ignore everything
+*
+
+# Except for the SD-Prompt-Enhancer directory
+!SD-Prompt-Enhancer/
+!SD-Prompt-Enhancer/*/
+!SD-Prompt-Enhancer/*/prompt_enhancer_tags/
+!SD-Prompt-Enhancer/*/prompt_enhancer_tags/*
+!SD-Prompt-Enhancer/*/scripts/
+!SD-Prompt-Enhancer/*/scripts/*
