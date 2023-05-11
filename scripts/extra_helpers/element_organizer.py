@@ -49,6 +49,8 @@ def return_known_elements(attributes_dict):
 def check_new_section(*args):
     global add_tag_elements_dict
 
+    print(f"args list in verify requirements = {args}")
+
     if args[1] == "New Section":
         print("New Section was found!")
         add_tag_elements_dict["category dropdown"][1] = False
@@ -83,6 +85,8 @@ def check_new_section(*args):
 
 def check_new_category(*args):
     global add_tag_elements_dict
+
+    print(f"args list in verify requirements = {args}")
 
     if args[2] == "New Category":
         print("New Category was found!")
@@ -125,9 +129,7 @@ def check_tags_empty(tag_dropdown, custom_tag):
 def verify_requirements(*args):  # Checks if an element has a value on change then checks tag inputs to enable button
     global add_tag_elements_dict
 
-    print(f"args list in verify requirements = {args}")
-    return gr.Button().update(interactive=False)
-    """invalid = False
+    invalid = False
     for a in range(1, 6):
         if len(args[a]) <= 0:
             invalid = True
@@ -145,5 +147,5 @@ def verify_requirements(*args):  # Checks if an element has a value on change th
     if not invalid:
         return gr.Button().update(interactive=True)
 
-    return gr.Button().update(interactive=False)"""
+    return gr.Button().update(interactive=False)
 

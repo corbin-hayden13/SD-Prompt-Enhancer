@@ -266,14 +266,14 @@ def on_ui_tabs():
                     section_dropdown.change(fn=check_new_section, inputs=all_inputs, outputs=all_inputs)
                     category_dropdown.change(fn=check_new_category, inputs=all_inputs, outputs=all_inputs)
                     # On change for all elements to enable and disable add tag button
-                    multiselect_dropdown.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
+                    """multiselect_dropdown.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
                     label_input.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
                     tag_input.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
                     custom_section.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
                     custom_category.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
                     custom_multiselect.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
                     custom_label.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
-                    custom_tag.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
+                    custom_tag.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)"""
 
                     make_tag_button.click(fn=add_update_tags, inputs=all_inputs)
                     section_dropdown.change(fn=set_relevant_categories, inputs=section_dropdown,
