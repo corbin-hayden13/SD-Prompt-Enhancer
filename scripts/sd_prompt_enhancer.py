@@ -1,69 +1,27 @@
 import os
-from random import shuffle
-
-import pandas as pd
 
 import modules.scripts as scripts
 from modules.scripts import script_callbacks
-import gradio as gr
+from scripts.extra_helpers.tag_classes import TagSection, TagDict
+from scripts.extra_helpers.utils import randomize_prompt, arbitrary_priority, prompt_priority
+from scripts.extra_helpers.element_organizer import check_new_section, check_new_category, verify_requirements
 
 from pandas import read_csv, isna, concat, DataFrame
+import pandas as pd
 import numpy as np
+import gradio as gr
 
 
 # TODO Ability to add and remove tags from within UI
-# TODO Ability to share tag file
 
 priorities = ["Prompt", "Random", "None"]
-# tags_dict = read_csv("PromptEnhancerScripts/prompt_enhancer_tags/prompt_enhancer_tags.csv", na_values=["null"]).replace("", np.nan)
 tags_dict = DataFrame()
 database_dict = {}
 pos_prompt_comp = None
 all_sections = []
 prompt_enhancer_dir = scripts.basedir()
 database_file_path = os.path.join(prompt_enhancer_dir, "prompt_enhancer_tags")
-num_extras = 5
-
-
-class TagDict:
-    def __init__(self, name, multiselect=True):
-        self.name = name
-        self.multiselect = multiselect
-        self.tag_dict = {}
-
-    def __getitem__(self, item):
-        return self.tag_dict[item]
-
-    def __setitem__(self, key, value):
-        self.tag_dict[key] = value
-
-    def keys(self):
-        return list(self.tag_dict.keys())
-
-
-class TagSection:
-    def __init__(self, name):
-        self.name = name
-        self.category_dicts = []
-
-    def append(self, cat_dict):
-        self.category_dicts.append(cat_dict)
-
-    def __getitem__(self, index):
-        try:
-            return self.category_dicts[index]
-        except TypeError:
-            return None
-
-    def __str__(self):
-        ret_str = ""
-        for cat_dict in self.category_dicts:
-            ret_str += str(cat_dict) + "\n"
-
-        return ret_str
-
-    def __len__(self):
-        return len(self.category_dicts)
+num_extras = 4
 
 
 def read_all_databases():
@@ -118,22 +76,6 @@ def format_tag_database():
     return sections_list
 
 
-def keys_to_str(key_list, value_dict):
-    ret_str = ""
-    for key in key_list:
-        ret_str += value_dict[key] + ", "
-
-    return ret_str[:len(ret_str) - 2] if ret_str != "" else ""
-
-
-def list_to_str(str_list):
-    ret_str = ""
-    for string in str_list:
-        ret_str += string + ", "
-
-    return ret_str[:len(ret_str) - 2] if ret_str != "" else ""
-
-
 def update_textbox(new_prompt, *args):
     global num_extras
     args_list = list(args)
@@ -147,14 +89,14 @@ def get_txt2img(prompt):
 
 def set_txt2img(*args):
     global num_extras
-    new_prompt = args[5]
+    new_prompt = args[4]
     new_prompt = new_prompt.replace(" ,", "")
     return gr.Textbox().update(value=new_prompt)
 
 
 def update_new_prompt(*args):
     global num_extras
-    new_prompt = args[3]
+    new_prompt = args[2]
     return update_textbox(new_prompt, *args)
 
 
@@ -226,11 +168,8 @@ def on_ui_tabs():
                     priority_radio = gr.Radio(label="Prioritize...", choices=priorities, elem_id="priorities",
                                               type="value", value="None")
 
-                with gr.Column():
-                    add_prompt_button = gr.Button(value="Add Tags to Prompt", elem_id="add_prompt_button")
-
             all_sections = format_tag_database()
-            ret_list = [priority_radio, add_prompt_button, pos_prompt_comp, curr_prompt_box, get_curr_prompt_button,
+            ret_list = [priority_radio, pos_prompt_comp, curr_prompt_box, get_curr_prompt_button,
                         new_prompt_box, set_new_prompt_button, apply_tags_button]
             num_extras = len(ret_list)
 
@@ -249,6 +188,10 @@ def on_ui_tabs():
             apply_tags_button.click(fn=update_new_prompt, inputs=ret_list, outputs=new_prompt_box)
 
         with gr.Tab(label="Tag Editor"):
+            description = gr.Markdown("""### Please Note:
+                                          * Custom sections and categories are disabled unless you first select \"New Section\" or \"New Category\" from the corresponding dropdowns
+                                          * Add Tag button is disabled until you have filled in all required fields
+                                      """)
             with gr.Column():
                 databases = []
                 for file in os.listdir(database_file_path):
@@ -267,31 +210,80 @@ def on_ui_tabs():
                     if len(section_list) > 1:
                         gr.Markdown(f"### Edit {name}")
                         with gr.Row():
-                            with gr.Row(style={"flex": 2}):
-                                section_dropdown = gr.Dropdown(label=f"Section Dropdown", choices=section_list,
-                                                               elem_id="section_dropdown", type="value",
-                                                               multiselect=False, elem_classes="equal-width")
-                                category_dropdown = gr.Dropdown(label=f"Category Dropdown",
-                                                                choices=category_list,
-                                                                elem_id="category_dropdown", type="value",
-                                                                multiselect=False, elem_classes="equal-width")
-                                multiselect_dropdown = gr.Dropdown(label=f"Multiselect Dropdown",
-                                                                   choices=["true", "false"],
-                                                                   elem_id="multiselect_dropdown", type="value",
-                                                                   multiselect=False,
-                                                                   elem_classes="equal-width")
-                            with gr.Row(style={"flex": 2}):
-                                label_input = gr.Textbox(label="Create New Label", value="",
-                                                         elem_id="label_input",
-                                                         type="text", elem_classes="equal-width")
-                                tag_input = gr.Textbox(label="Create New Tag", value="", elem_id="tag_input",
-                                                       type="text", elem_classes="equal-width")
-                            with gr.Row(style={"flex": 1}):
-                                make_tag_button = gr.Button(value="Create New Tag", elem_id="make_tag_button",
-                                                            elem_classes="button-width")
+                            with gr.Column():
+                                with gr.Row():
+                                    section_dropdown = gr.Dropdown(label=f"Section Dropdown", choices=section_list,
+                                                                   elem_id="section_dropdown", type="value",
+                                                                   multiselect=False, elem_classes="equal-width")
 
-                    make_tag_button.click(fn=add_update_tags, inputs=[name_label, section_dropdown, category_dropdown,
-                                                                      multiselect_dropdown, label_input, tag_input])
+                                    category_dropdown = gr.Dropdown(label=f"Category Dropdown",
+                                                                    choices=category_list,
+                                                                    elem_id="category_dropdown", type="value",
+                                                                    multiselect=False, elem_classes="equal-width")
+
+                                    multiselect_dropdown = gr.Dropdown(label=f"Multiselect Dropdown",
+                                                                       choices=["true", "false"],
+                                                                       elem_id="multiselect_dropdown", type="value",
+                                                                       multiselect=False, interactive=True)
+
+                                with gr.Row():
+                                    custom_section = gr.Textbox(label="Add Your New Section Here", value="",
+                                                                elem_id="custom_section",
+                                                                type="text", interactive=False)
+
+                                    custom_category = gr.Textbox(label="Add Your New Category Here",
+                                                                 value="",
+                                                                 elem_id="custom_category",
+                                                                 type="text", interactive=False)
+                                    custom_multiselect = gr.Dropdown(label=f"Custom Multiselect",
+                                                                     choices=["true", "false"],
+                                                                     elem_id="custom_multiselect", type="value",
+                                                                     multiselect=False, interactive=False)
+
+                            with gr.Column():
+                                with gr.Row():
+                                    label_input = gr.Textbox(label="Create New Label", value="",
+                                                             elem_id="label_input",
+                                                             type="text", elem_classes="equal-width")
+                                    tag_input = gr.Textbox(label="Create New Tag", value="", elem_id="tag_input",
+                                                           type="text", elem_classes="equal-width")
+
+                                with gr.Row():
+                                    custom_label = gr.Textbox(label="Add Custom Label", value="", elem_id="custom_label",
+                                                              type="text", interactive=False)
+                                    custom_tag = gr.Textbox(label="Add Custom Tag", value="", elem_id="custom_label",
+                                                            type="text", interactive=False)
+
+                            with gr.Column():
+                                with gr.Row():
+                                    make_tag_button = gr.Button(value="Create New Tag", elem_id="make_tag_button",
+                                                                elem_classes="button-width", interactive=False)
+
+                    all_inputs = [name_label, section_dropdown, category_dropdown, multiselect_dropdown, label_input,
+                                  tag_input, custom_section, custom_category, custom_multiselect, custom_label,
+                                  custom_tag, make_tag_button]
+
+                    """ Defined behavior here:
+                         - Custom inputs disabled until New Section / New Category selected
+                           - If New Section, disable all but Section dropdown
+                           - If New Category, disable all but Section and Category Dropdown
+                         - Add New Tag disabled until all fields filled out
+                           - On change of Tag / Custom Tag Label, check necessary elements value to determine if tag can be added
+                    """
+
+                    section_dropdown.change(fn=check_new_section, inputs=all_inputs, outputs=all_inputs)
+                    category_dropdown.change(fn=check_new_category, inputs=all_inputs, outputs=all_inputs)
+                    # On change for all elements to enable and disable add tag button
+                    multiselect_dropdown.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
+                    label_input.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
+                    tag_input.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
+                    custom_section.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
+                    custom_category.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
+                    custom_multiselect.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
+                    custom_label.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
+                    custom_tag.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
+
+                    make_tag_button.click(fn=add_update_tags, inputs=all_inputs)
                     section_dropdown.change(fn=set_relevant_categories, inputs=section_dropdown,
                                             outputs=category_dropdown)
                     category_dropdown.change(fn=set_category_multiselect, inputs=category_dropdown,
@@ -318,59 +310,15 @@ class PromptEnhancerScript(scripts.Script):
 
     @staticmethod
     def handle_priority(prompt, args, num_extras):
-        global priorities
+        global all_sections, priorities
         priority = args[0]
 
         if priority == priorities[0]:
-            return PromptEnhancerScript.prompt_priority(prompt, args, num_extras)
+            return prompt_priority(prompt, args, all_sections, num_extras)
         elif priority == priorities[len(priorities) - 2]:
-            return PromptEnhancerScript.randomize_prompt(prompt, args, num_extras)
+            return randomize_prompt(prompt, args, all_sections, num_extras)
         else:  # This satisfies both None and Arbitrary priorities
-            return PromptEnhancerScript.arbitrary_priority(prompt, args, num_extras, priority=priority)
-
-    @staticmethod
-    def prompt_priority(prompt, args, num_extras):
-        global all_sections
-        return "((" + prompt + ")), " + PromptEnhancerScript.parse_arbitrary_args(args, all_sections, num_extras)
-
-    @staticmethod
-    def arbitrary_priority(prompt, args, num_extras, priority=None):
-        global all_sections
-        return prompt + ", " + PromptEnhancerScript.parse_arbitrary_args(args, all_sections, num_extras, priority_section=priority)
-
-    @staticmethod
-    def parse_arbitrary_args(args, section_list, num_extras, is_random=False, priority_section=None) -> str:
-        final_list = []
-        print(f"attributes = {section_list}, args = {args}")
-        for a in range(len(section_list)):
-            starting_ind = num_extras if a == 0 else len(section_list[a - 1]) + starting_ind
-            temp_str = ""
-            for b in range(starting_ind, starting_ind + len(section_list[a])):  # For every valid category...
-                if isinstance(args[b], list) and len(args[b]) > 0:
-                    temp_str += keys_to_str(args[b], section_list[a][b - starting_ind]) + ", "
-
-                elif len(args[b]) > 0:
-                    temp_str += section_list[a][b - starting_ind][args[b]] + ", "
-                    
-            temp_str = temp_str[:len(temp_str) - 2]    
-            if section_list[a].name == priority_section: final_list.insert(0, "((" + temp_str + "))")
-            else: final_list.append(temp_str)
-
-        if is_random:
-            shuffle(final_list)
-            print(f"Shuffled to {final_list}")
-
-        return list_to_str(final_list).replace(" ,", "")
-
-    @staticmethod
-    def randomize_prompt(prompt, args, num_extras) -> str:
-        global all_sections
-        prompt_list = prompt if isinstance(prompt, list) else [a.strip() for a in prompt.split(",")]
-        args_list = list(args)
-        args_list.append(prompt_list)
-
-        return PromptEnhancerScript.parse_arbitrary_args(args_list, all_sections, num_extras, True)
+            return arbitrary_priority(prompt, args, all_sections, num_extras, priority=priority)
 
 
 script_callbacks.on_ui_tabs(on_ui_tabs)
-
