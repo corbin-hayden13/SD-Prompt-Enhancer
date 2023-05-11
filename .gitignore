@@ -8,3 +8,5 @@
 !SD-Prompt-Enhancer/*/prompt_enhancer_tags/*
 !SD-Prompt-Enhancer/*/scripts/
 !SD-Prompt-Enhancer/*/scripts/*
+!SD-Prompt-Enhancer/*/scripts/*/extra_helpers/
+!SD-Prompt-Enhancer/*/scripts/*/extra_helpers/*

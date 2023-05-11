@@ -2,9 +2,9 @@ import os
 
 import modules.scripts as scripts
 from modules.scripts import script_callbacks
-from scripts.extra_helpers.tag_classes import TagSection, TagDict
-from scripts.extra_helpers.utils import randomize_prompt, arbitrary_priority, prompt_priority
-from scripts.extra_helpers.element_organizer import check_new_section, check_new_category, verify_requirements
+from extra_helpers.tag_classes import TagSection, TagDict
+from extra_helpers.utils import randomize_prompt, arbitrary_priority, prompt_priority
+from extra_helpers.element_organizer import check_new_section, check_new_category, verify_requirements
 
 from pandas import read_csv, isna, concat, DataFrame
 import pandas as pd
