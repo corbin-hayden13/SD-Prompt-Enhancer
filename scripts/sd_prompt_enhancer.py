@@ -2,9 +2,9 @@ import os
 
 import modules.scripts as scripts
 from modules.scripts import script_callbacks
-from extra_helpers.tag_classes import TagSection, TagDict
-from extra_helpers.utils import randomize_prompt, arbitrary_priority, prompt_priority
-from extra_helpers.element_organizer import check_new_section, check_new_category, verify_requirements
+from scripts.extra_helpers.tag_classes import TagSection, TagDict
+from scripts.extra_helpers.utils import randomize_prompt, arbitrary_priority, prompt_priority
+from scripts.extra_helpers.element_organizer import check_new_section, check_new_category, verify_requirements
 
 from pandas import read_csv, isna, concat, DataFrame
 import pandas as pd
@@ -262,14 +262,6 @@ def on_ui_tabs():
                     all_inputs = [name_label, section_dropdown, category_dropdown, multiselect_dropdown, label_input,
                                   tag_input, custom_section, custom_category, custom_multiselect, custom_label,
                                   custom_tag, make_tag_button]
-
-                    """ Defined behavior here:
-                         - Custom inputs disabled until New Section / New Category selected
-                           - If New Section, disable all but Section dropdown
-                           - If New Category, disable all but Section and Category Dropdown
-                         - Add New Tag disabled until all fields filled out
-                           - On change of Tag / Custom Tag Label, check necessary elements value to determine if tag can be added
-                    """
 
                     section_dropdown.change(fn=check_new_section, inputs=all_inputs, outputs=all_inputs)
                     category_dropdown.change(fn=check_new_category, inputs=all_inputs, outputs=all_inputs)
