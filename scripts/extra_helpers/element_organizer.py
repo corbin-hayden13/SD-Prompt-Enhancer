@@ -3,12 +3,12 @@ import gradio as gr
 
 add_tag_elements_dict = {
     "name label": ["label", False],
-    "section dropdown": ["dropdown", True, None],
-    "category dropdown": ["dropdown", True, None],
-    "multiselect dropdown": ["dropdown", True, None],
+    "section dropdown": ["dropdown", True],
+    "category dropdown": ["dropdown", True],
+    "multiselect dropdown": ["dropdown", True],
     "label textbox": ["textbox", True],
     "tag textbox": ["textbox", True],
-    "custom section": ["textbox", False],
+    "custom section": ["textbox", False, ""],
     "custom category": ["textbox", False],
     "custom multiselect": ["dropdown", False, None],
     "custom label": ["textbox", False],
@@ -29,11 +29,12 @@ def return_known_elements(attributes_dict):
     for attributes in list(attributes_dict.keys()):
         if attributes_dict[attributes][0] == "textbox":
             interactive = attributes_dict[attributes][1]
-            ret_gradio_list.append(gr.Textbox().update(interactive=interactive))
+            try: value = attributes_dict[attributes][2]
+            except IndexError: value = None
+            ret_gradio_list.append(gr.Textbox().update(interactive=interactive, value=value))
         elif attributes_dict[attributes][0] == "dropdown":
             interactive = attributes_dict[attributes][1]
-            value = attributes_dict[attributes][2]
-            ret_gradio_list.append(gr.Dropdown().update(interactive=interactive, value=value))
+            ret_gradio_list.append(gr.Dropdown().update(interactive=interactive))
         elif attributes_dict[attributes][0] == "button":
             interactive = attributes_dict[attributes][1]
             ret_gradio_list.append(gr.Button().update(interactive=interactive))
@@ -124,7 +125,9 @@ def check_tags_empty(tag_dropdown, custom_tag):
 def verify_requirements(*args):  # Checks if an element has a value on change then checks tag inputs to enable button
     global add_tag_elements_dict
 
-    invalid = False
+    print(f"args list in verify requirements = {args}")
+    return gr.Button().update(interactive=False)
+    """invalid = False
     for a in range(1, 6):
         if len(args[a]) <= 0:
             invalid = True
@@ -142,5 +145,5 @@ def verify_requirements(*args):  # Checks if an element has a value on change th
     if not invalid:
         return gr.Button().update(interactive=True)
 
-    return gr.Button().update(interactive=False)
+    return gr.Button().update(interactive=False)"""
 
