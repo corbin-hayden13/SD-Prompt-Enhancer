@@ -17,7 +17,6 @@ Credit for v1.0 goes to [etcroot](https://github.com/etcroot) and [Dreamlabs](ht
 
  * In this extension release I have implemented the feature of adding tags to your current csv files from within the webui
    - Limitations include:
-     - No option to add a custom section nor category within the UI (you can still manually add them)
      - No option to delete tags from within the webui
      - No option to create tables within the UI
    - I plan to add features to remedy these limitations in the future
