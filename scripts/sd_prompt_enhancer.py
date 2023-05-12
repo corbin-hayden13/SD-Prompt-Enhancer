@@ -102,13 +102,16 @@ def update_new_prompt(*args):
 
 def add_update_tags(*args):
     global database_dict, prompt_enhancer_dir, all_sections
+
     table_name = args[0]["label"]
+    arg_offset = 5 if args[1] == "New Section" or args[2] == "New Category" else 0
+    print(f"args[1] = \"{args[1]}\"\narg_offset = {arg_offset}\nSection is now = {str(args[1 + arg_offset])}")
     new_tag = {
-        "Section":     [str(args[1])],
-        "Multiselect": [str(args[3])],
-        "Category":    [str(args[2])],
-        "Label":       [str(args[4])],
-        "Tag":         [str(args[5])]
+        "Section":     [str(args[1 + arg_offset])],
+        "Multiselect": [True if str(args[3 + arg_offset]) == "true" else False],
+        "Category":    [str(args[2 + arg_offset])],
+        "Label":       [str(args[4 + arg_offset])],
+        "Tag":         [str(args[5 + arg_offset])]
     }
     temp_frame = pd.DataFrame(data=new_tag)
     database_dict[table_name] = concat([database_dict[table_name], temp_frame], axis=0, ignore_index=True)
@@ -131,6 +134,7 @@ def set_relevant_categories(curr_section):
             for a in range(len(tag_section)):
                 relevant_categories.append(tag_section[a].name)
 
+    relevant_categories.append("New Category")
     return gr.Dropdown().update(choices=relevant_categories)
 
 
@@ -219,12 +223,13 @@ def on_ui_tabs():
                                     category_dropdown = gr.Dropdown(label=f"Category Dropdown",
                                                                     choices=category_list,
                                                                     elem_id="category_dropdown", type="value",
-                                                                    multiselect=False, elem_classes="equal-width")
+                                                                    multiselect=False, elem_classes="equal-width",
+                                                                    interactive=False)
 
                                     multiselect_dropdown = gr.Dropdown(label=f"Multiselect Dropdown",
                                                                        choices=["true", "false"],
                                                                        elem_id="multiselect_dropdown", type="value",
-                                                                       multiselect=False, interactive=True)
+                                                                       multiselect=False, interactive=False)
 
                                 with gr.Row():
                                     custom_section = gr.Textbox(label="Add Your New Section Here", value="",
@@ -243,10 +248,11 @@ def on_ui_tabs():
                             with gr.Column():
                                 with gr.Row():
                                     label_input = gr.Textbox(label="Create New Label", value="",
-                                                             elem_id="label_input",
+                                                             elem_id="label_input", interactive=False,
                                                              type="text", elem_classes="equal-width")
                                     tag_input = gr.Textbox(label="Create New Tag", value="", elem_id="tag_input",
-                                                           type="text", elem_classes="equal-width")
+                                                           type="text", elem_classes="equal-width",
+                                                           interactive=False)
 
                                 with gr.Row():
                                     custom_label = gr.Textbox(label="Add Custom Label", value="", elem_id="custom_label",
