@@ -22,7 +22,7 @@ Credit for v1.0 goes to [etcroot](https://github.com/etcroot) and [Dreamlabs](ht
    - I plan to add features to remedy these limitations in the future
  * When you press the add tag button, it will add the tag you created, it just will not visually indicate that you did.  I plan to make this more apparent in the future
  * You have to restart the client side UI to display any added tags.
- * If you get a permission error, you have to change your csv properties to disbale the "read-only" setting
+ * You might get a permission error when creating new tags.  This is either due to your csv files being Read-Only, or you have a csv file you're trying to write to open in a different editor.
 
 #### Manually adding tags
 
