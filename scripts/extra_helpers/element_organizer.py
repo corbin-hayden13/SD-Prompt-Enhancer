@@ -123,7 +123,10 @@ def check_new_category(*args):
 
 
 def check_tags_empty(tag_dropdown, custom_tag):
-    return True if len(tag_dropdown) > 0 else False, True if len(custom_tag) > 0 else False
+    tag_bool = False if tag_dropdown is None or len(tag_dropdown) <= 0 else True
+    custom_bool = False if custom_tag is None or len(custom_tag) <= 0 else True
+
+    return tag_bool, custom_bool
 
 
 def verify_requirements(*args):  # Checks if an element has a value on change then checks tag inputs to enable button
@@ -131,6 +134,10 @@ def verify_requirements(*args):  # Checks if an element has a value on change th
 
     invalid = False
     for a in range(1, 6):
+        if args[a] is None:
+            invalid = True
+            break
+
         if len(args[a]) <= 0:
             invalid = True
             break
@@ -140,6 +147,10 @@ def verify_requirements(*args):  # Checks if an element has a value on change th
 
     invalid = False
     for b in range(6, 11):
+        if args[b] is None:
+            invalid = True
+            break
+
         if len(args[b]) <= 0:
             invalid = True
             break
