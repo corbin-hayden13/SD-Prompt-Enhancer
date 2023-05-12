@@ -30,7 +30,7 @@ Credit for v1.0 goes to [etcroot](https://github.com/etcroot) and [Dreamlabs](ht
    - Section (string): This is the overall theme the tag belongs to, like "Camera Settings" or "Image Attributes"
    - Multiselect (binary/boolean): This is a TRUE/FALSE value that determines whether multiple tags from the same category can be applied to the prompt at once.  A camera setting for the different types of shots should be Multiselect: FALSE because it doesn't make sense to ask for both a "Cowboy Shot" and "Long Shot"
      - If you choose Multiselect: FALSE, you will have to add two tags to the category -> {"null":"null"} and {"none":"null"}.  This has to do with a dictionary issue in the script, but also allows you to "disable" your previous choice for that category, as Multiselect: FALSE dropdowns in Gradio have no default "None" option
-   - Category (string): This is going to be the name of your dropdown, so it'slike a smaller group inside of Section.
+   - Category (string): This is going to be the name of your dropdown, so it's like a smaller group inside of Section.
      - Ex: Section - Image Attributes, Category - Lighting
    - Label (string): This is going to be the option that you see within the dropdown menu.  It's most often an abbreviation of the actual tag
    - Tag (string): This is the actual text that will be applied to the prompt.  As of the current version, is only visible on the front end after generating an image using the script UI and selecting the corresponding Label
