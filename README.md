@@ -50,6 +50,7 @@ Credit for v1.0 goes to [etcroot](https://github.com/etcroot) and [Dreamlabs](ht
 #### Manually adding files
 
  * You can download the zip file from my CivitAi page (linked below).  Unzip that file and put the "SD-Prompt-Enhancer" folder right into your extensions folder in your local installation.  that's it!
+ * CivitAi vesions may be out of date at any given time, as I will only upload zipped version updates after large feature changes.  However, this repo will always be up-to-date
 
 Thank you for using the Stable Diffusion Prompt Enhancer script!  As always please report any issues, concerns, and feature ideas on the model
 [webpage](https://civitai.com/models/58869/sd-prompt-enhancer)
