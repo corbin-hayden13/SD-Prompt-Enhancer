@@ -1,15 +1,10 @@
-# Stable Diffusion Prompt Enhancer v2.0
-### Changelog
- * Now an extension!
-   - Pull current prompt from txt2img and edit within the extension's ui tab
-   - Build enhanced prompt within new prompt textbox
-     - Button to update prompt based on original promt textbox and selected tags
-     - Button to send back to txt2img
-   - Tag Editor tab to add new tags via the webui
-
 Credit for v1.0 goes to [etcroot](https://github.com/etcroot) and [Dreamlabs](https://civitai.com/user/Dreamlabs/models) for the original idea
 
 ## Welcome to the SD Prompt Enhancer script! Here to help you generate higher quality and more consistent images!
+
+### You can now find user tag files [here](https://drive.google.com/drive/folders/1NAIa2riHAS9Cvjar_ah_Ebtj5m2fmsM6?usp=sharing) and I'm working on enabling requests to add community tag files to this list
+ * Requests must be made to have you tags added (for content curation purposes), I will add a link to a form to fill out here soon
+ * I'm trying to find a convenient solution to hosting community tag files, so if you have a solution let me know!
 
 ### Things to know when adding your own tags:
 
