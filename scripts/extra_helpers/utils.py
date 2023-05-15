@@ -45,7 +45,6 @@ def parse_arbitrary_args(args, section_list, num_extras, is_random=False, priori
 
     if is_random:
         shuffle(final_list)
-        print(f"Shuffled to {final_list}")
 
     return list_to_str(final_list).replace(" ,", "")
 
