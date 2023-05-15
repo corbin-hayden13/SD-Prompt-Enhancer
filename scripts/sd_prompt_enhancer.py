@@ -177,12 +177,11 @@ def on_ui_tabs():
                         new_prompt_box, set_new_prompt_button, apply_tags_button]
             num_extras = len(ret_list)
 
-            for section in all_sections:
-                gr.HTML("<br />")
-                gr.HTML(f"<span><b>{section.name}</b></span>")
-                with gr.Row():
-                    for a in range(len(section)):  # Categories
-                        with gr.Row():
+            with gr.Row():
+                for section in all_sections:
+                    gr.Markdown(f"### {section.name}")
+                    with gr.Column():
+                        for a in range(len(section)):  # Categories
                             temp_dropdown = gr.Dropdown(label=section[a].name, choices=section[a].keys(),
                                                         elem_id=section[a].name, type="value",
                                                         multiselect=section[a].multiselect)
@@ -196,6 +195,7 @@ def on_ui_tabs():
                                           * Custom sections and categories are disabled unless you first select \"New Section\" or \"New Category\" from the corresponding dropdowns
                                           * Add Tag button is disabled until you have filled in all required fields
                                       """)
+            """ ---------------------------------------------------------------------------------------------------- """
             with gr.Column():
                 databases = []
                 for file in os.listdir(database_file_path):
