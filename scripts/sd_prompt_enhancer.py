@@ -179,8 +179,8 @@ def on_ui_tabs():
 
             with gr.Row():
                 for section in all_sections:
-                    gr.Markdown(f"### {section.name}")
                     with gr.Column():
+                        gr.Markdown(f"### {section.name}")
                         for a in range(len(section)):  # Categories
                             temp_dropdown = gr.Dropdown(label=section[a].name, choices=section[a].keys(),
                                                         elem_id=section[a].name, type="value",
