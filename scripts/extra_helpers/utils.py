@@ -30,12 +30,16 @@ def parse_arbitrary_args(args, section_list, num_extras, is_random=False, priori
     for a in range(len(section_list)):
         starting_ind = num_extras if a == 0 else len(section_list[a - 1]) + starting_ind
         temp_str = ""
-        for b in range(starting_ind, starting_ind + len(section_list[a])):  # For every valid category...
-            if isinstance(args[b], list) and len(args[b]) > 0:
-                temp_str += keys_to_str(args[b], section_list[a][b - starting_ind]) + ", "
+        try:
+            for b in range(starting_ind, starting_ind + len(section_list[a])):  # For every valid category...
+                if isinstance(args[b], list) and len(args[b]) > 0:
+                    temp_str += keys_to_str(args[b], section_list[a][b - starting_ind]) + ", "
 
-            elif len(args[b]) > 0:
-                temp_str += section_list[a][b - starting_ind][args[b]] + ", "
+                elif len(args[b]) > 0:
+                    temp_str += section_list[a][b - starting_ind][args[b]] + ", "
+
+        except IndexError:
+            print(f"--- Caught Index Error in utils.py -> parse_arbitrary_args ---\nb = {b} for length of args = {len(args)}\n")
 
         temp_str = temp_str[:len(temp_str) - 2]
         if section_list[a].name == priority_section:

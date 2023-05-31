@@ -191,10 +191,10 @@ def on_ui_tabs():
             apply_tags_button.click(fn=update_new_prompt, inputs=ret_list, outputs=new_prompt_box)
 
         with gr.Tab(label="Tag Editor"):
-            description = gr.Markdown("""### Please Note:
-                                          * Custom sections and categories are disabled unless you first select \"New Section\" or \"New Category\" from the corresponding dropdowns
-                                          * Add Tag button is disabled until you have filled in all required fields
-                                      """)
+            gr.Markdown("""### Please Note:
+                            * Custom sections and categories are disabled unless you first select \"New Section\" or \"New Category\" from the corresponding dropdowns
+                            * Add Tag button is disabled until you have filled in all required fields
+                        """)
             """ ---------------------------------------------------------------------------------------------------- """
             with gr.Column():
                 databases = []
