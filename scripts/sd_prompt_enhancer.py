@@ -124,12 +124,17 @@ def add_update_tags(*args):
         print(err)
 
 
+def update_choices(search_dropdown):
+    global lookup_tree
+
+    new_choices = lookup_tree.query(search_dropdown)
+    return gr.Dropdown().update(choices=new_choices, multiselect=True)
+
+
 def on_ui_tabs():
     global all_sections, lookup_tree, pos_prompt_comp, num_extras, database_file_path, prompt_enhancer_dir
 
-    # custom_css = ".two-thirds{width:66.66% !important;}.one-third{width:33.33% !important;}"
-    css = ".equal-width{flex: 2 !important;} .button-width{flex: 1 !important;}"
-    with gr.Blocks(analytics_enabled=False, css=css) as sd_prompt_enhancer:
+    with gr.Blocks(analytics_enabled=False) as sd_prompt_enhancer:
         with gr.Tab(label="Prompt Enhancer"):
             gr.HTML("<br />")
             with gr.Row():
@@ -184,6 +189,8 @@ def on_ui_tabs():
                                 with gr.Column(scale=7):
                                     search_dropdown = gr.Dropdown(label="Search By Keyword", choices=[], multiselect=True,
                                                                   type="value")
+                                    search_dropdown.change(fn=update_choices, inputs=search_dropdown,
+                                                           outputs=search_dropdown)
                                 with gr.Column(scale=1):
                                     filter_dropdown = gr.Dropdown(choices=["All", "Section", "Multiselect", "Category", "Label", "Tag"],
                                                                   type="value", label="Filter By...", value="All",
