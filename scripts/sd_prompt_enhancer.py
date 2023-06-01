@@ -3,8 +3,8 @@ import os
 import modules.scripts as scripts
 from modules.scripts import script_callbacks
 from scripts.extra_helpers.tag_classes import TagSection, TagDict
+from scripts.extra_helpers.tag_classes import LookupTree
 from scripts.extra_helpers.utils import randomize_prompt, arbitrary_priority, prompt_priority
-from scripts.extra_helpers.element_organizer import check_new_section, check_new_category, verify_requirements
 
 from pandas import read_csv, isna, concat, DataFrame
 import pandas as pd
@@ -12,13 +12,12 @@ import numpy as np
 import gradio as gr
 
 
-# TODO Ability to add and remove tags from within UI
-
 priorities = ["Prompt", "Random", "None"]
 tags_dict = DataFrame()
 database_dict = {}
 pos_prompt_comp = None
 all_sections = []
+lookup_tree = None
 prompt_enhancer_dir = scripts.basedir()
 database_file_path = os.path.join(prompt_enhancer_dir, "prompt_enhancer_tags")
 num_extras = 4
@@ -125,46 +124,33 @@ def add_update_tags(*args):
         print(err)
 
 
-def set_relevant_categories(curr_section):
-    global all_sections
+def update_choices(search_dropdown):
+    global lookup_tree
 
-    relevant_categories = []
-    for tag_section in all_sections:
-        if tag_section.name == curr_section:
-            for a in range(len(tag_section)):
-                relevant_categories.append(tag_section[a].name)
-
-    relevant_categories.append("New Category")
-    return gr.Dropdown().update(choices=relevant_categories)
-
-
-def set_category_multiselect(curr_category):
-    global tags_dict
-    for a in range(len(tags_dict["Category"])):
-        if tags_dict["Category"][a] == curr_category:
-            return gr.Dropdown().update(value=str(tags_dict["Multiselect"][a]).lower())
-
-    return gr.Dropdown().update(value="")
+    new_choices = lookup_tree.query(search_dropdown)
+    return gr.Dropdown().update(choices=new_choices, multiselect=True)
 
 
 def on_ui_tabs():
-    global all_sections, pos_prompt_comp, num_extras, database_file_path, prompt_enhancer_dir
+    global all_sections, lookup_tree, pos_prompt_comp, num_extras, database_file_path, prompt_enhancer_dir
 
-    # custom_css = ".two-thirds{width:66.66% !important;}.one-third{width:33.33% !important;}"
-    css = ".equal-width{flex: 2 !important;} .button-width{flex: 1 !important;}"
-    with gr.Blocks(analytics_enabled=False, css=css) as sd_prompt_enhancer:
+    with gr.Blocks(analytics_enabled=False) as sd_prompt_enhancer:
         with gr.Tab(label="Prompt Enhancer"):
             gr.HTML("<br />")
             with gr.Row():
-                curr_prompt_box = gr.Textbox(label="Your Prompt", elem_id="curr_prompt", value="", type="text")
-                get_curr_prompt_button = gr.Button(value="Get Txt2Img Prompt", elem_id="get_curr_prompt_button")
-                get_curr_prompt_button.click(fn=get_txt2img, inputs=pos_prompt_comp, outputs=curr_prompt_box)
+                with gr.Column(scale=7):
+                    curr_prompt_box = gr.Textbox(label="Your Prompt", elem_id="curr_prompt", value="", type="text")
+                with gr.Column(scale=1):
+                    get_curr_prompt_button = gr.Button(value="Get Txt2Img Prompt", elem_id="get_curr_prompt_button")
+                    get_curr_prompt_button.click(fn=get_txt2img, inputs=pos_prompt_comp, outputs=curr_prompt_box)
 
             with gr.Row():
-                new_prompt_box = gr.Textbox(label="New Prompt", elem_id="new_prompt", value="", type="text")
-                with gr.Row():
-                    apply_tags_button = gr.Button(value="Update New Prompt", elem_id="apply_tags_buttons")
-                    set_new_prompt_button = gr.Button(value="Set Txt2Img Prompt", elem_id="set_new_prompt_button")
+                with gr.Column(scale=7):
+                    new_prompt_box = gr.Textbox(label="New Prompt", elem_id="new_prompt", value="", type="text")
+                with gr.Column(scale=1):
+                    with gr.Row():
+                        apply_tags_button = gr.Button(value="Update New Prompt", elem_id="apply_tags_buttons")
+                        set_new_prompt_button = gr.Button(value="Set Txt2Img Prompt", elem_id="set_new_prompt_button")
 
             gr.HTML("<br />")
             with gr.Row():
@@ -173,6 +159,7 @@ def on_ui_tabs():
                                               type="value", value="None")
 
             all_sections = format_tag_database()
+            lookup_tree = LookupTree(all_sections)
             ret_list = [priority_radio, pos_prompt_comp, curr_prompt_box, get_curr_prompt_button,
                         new_prompt_box, set_new_prompt_button, apply_tags_button]
             num_extras = len(ret_list)
@@ -191,101 +178,25 @@ def on_ui_tabs():
             apply_tags_button.click(fn=update_new_prompt, inputs=ret_list, outputs=new_prompt_box)
 
         with gr.Tab(label="Tag Editor"):
-            gr.Markdown("""### Please Note:
-                            * Custom sections and categories are disabled unless you first select \"New Section\" or \"New Category\" from the corresponding dropdowns
-                            * Add Tag button is disabled until you have filled in all required fields
-                        """)
-            """ ---------------------------------------------------------------------------------------------------- """
-            with gr.Column():
-                databases = []
-                for file in os.listdir(database_file_path):
-                    if file.endswith(".csv"):
-                        databases.append(
-                            (file, read_csv(os.path.join(database_file_path, file),
-                                            na_values=["null"]).replace("", np.nan))
-                        )
+            global database_dict
 
-                for name, database in databases:
-                    name_label = gr.Label(value=name, visible=False)
-                    section_list = list(set(database["Section"]))
-                    section_list.append("New Section")
-                    category_list = list(set(database["Category"]))
-                    category_list.append("New Category")
-                    if len(section_list) > 1:
-                        gr.Markdown(f"### Edit {name}")
-                        with gr.Row():
-                            with gr.Column():
-                                with gr.Row():
-                                    section_dropdown = gr.Dropdown(label=f"Section Dropdown", choices=section_list,
-                                                                   elem_id="section_dropdown", type="value",
-                                                                   multiselect=False, elem_classes="equal-width")
+            with gr.Row():
+                for file in [csv_file for csv_file in list(database_dict.keys()) if csv_file != "template.csv"]:
+                    file_name = file.split(".")[0].replace("_", " ")
+                    with gr.Tab(label=f"{file_name}"):
+                        with gr.Column():
+                            with gr.Row():
+                                with gr.Column(scale=7):
+                                    search_dropdown = gr.Dropdown(label="Search By Keyword", choices=[], multiselect=True,
+                                                                  type="value")
+                                    search_dropdown.change(fn=update_choices, inputs=search_dropdown,
+                                                           outputs=search_dropdown)
+                                with gr.Column(scale=1):
+                                    filter_dropdown = gr.Dropdown(choices=["All", "Section", "Multiselect", "Category", "Label", "Tag"],
+                                                                  type="value", label="Filter By...", value="All",
+                                                                  multiselect=False, interactive=True)
 
-                                    category_dropdown = gr.Dropdown(label=f"Category Dropdown",
-                                                                    choices=category_list,
-                                                                    elem_id="category_dropdown", type="value",
-                                                                    multiselect=False, elem_classes="equal-width",
-                                                                    interactive=False)
-
-                                    multiselect_dropdown = gr.Dropdown(label=f"Multiselect Dropdown",
-                                                                       choices=["true", "false"],
-                                                                       elem_id="multiselect_dropdown", type="value",
-                                                                       multiselect=False, interactive=False)
-
-                                with gr.Row():
-                                    custom_section = gr.Textbox(label="Add Your New Section Here", value="",
-                                                                elem_id="custom_section",
-                                                                type="text", interactive=False)
-
-                                    custom_category = gr.Textbox(label="Add Your New Category Here",
-                                                                 value="",
-                                                                 elem_id="custom_category",
-                                                                 type="text", interactive=False)
-                                    custom_multiselect = gr.Dropdown(label=f"Custom Multiselect",
-                                                                     choices=["true", "false"],
-                                                                     elem_id="custom_multiselect", type="value",
-                                                                     multiselect=False, interactive=False)
-
-                            with gr.Column():
-                                with gr.Row():
-                                    label_input = gr.Textbox(label="Create New Label", value="",
-                                                             elem_id="label_input", interactive=False,
-                                                             type="text", elem_classes="equal-width")
-                                    tag_input = gr.Textbox(label="Create New Tag", value="", elem_id="tag_input",
-                                                           type="text", elem_classes="equal-width",
-                                                           interactive=False)
-
-                                with gr.Row():
-                                    custom_label = gr.Textbox(label="Add Custom Label", value="", elem_id="custom_label",
-                                                              type="text", interactive=False)
-                                    custom_tag = gr.Textbox(label="Add Custom Tag", value="", elem_id="custom_label",
-                                                            type="text", interactive=False)
-
-                            with gr.Column():
-                                with gr.Row():
-                                    make_tag_button = gr.Button(value="Create New Tag", elem_id="make_tag_button",
-                                                                elem_classes="button-width", interactive=False)
-
-                    all_inputs = [name_label, section_dropdown, category_dropdown, multiselect_dropdown, label_input,
-                                  tag_input, custom_section, custom_category, custom_multiselect, custom_label,
-                                  custom_tag, make_tag_button]
-
-                    section_dropdown.change(fn=check_new_section, inputs=all_inputs, outputs=all_inputs)
-                    category_dropdown.change(fn=check_new_category, inputs=all_inputs, outputs=all_inputs)
-                    # On change for all elements to enable and disable add tag button
-                    multiselect_dropdown.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
-                    label_input.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
-                    tag_input.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
-                    custom_section.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
-                    custom_category.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
-                    custom_multiselect.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
-                    custom_label.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
-                    custom_tag.change(fn=verify_requirements, inputs=all_inputs, outputs=make_tag_button)
-
-                    make_tag_button.click(fn=add_update_tags, inputs=all_inputs)
-                    section_dropdown.change(fn=set_relevant_categories, inputs=section_dropdown,
-                                            outputs=category_dropdown)
-                    category_dropdown.change(fn=set_category_multiselect, inputs=category_dropdown,
-                                             outputs=multiselect_dropdown)
+                            dataframe = gr.DataFrame(value=database_dict[file], interactive=True)
 
     return [(sd_prompt_enhancer, "SD Prompt Enhancer", "sd_prompt_enhancer")]
 
