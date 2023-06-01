@@ -2,9 +2,9 @@ import os
 
 import modules.scripts as scripts
 from modules.scripts import script_callbacks
-from scripts.extra_helpers.tag_classes import TagSection, TagDict, LookupTree
+from scripts.extra_helpers.tag_classes import TagSection, TagDict
 from scripts.extra_helpers.tag_classes import LookupTree
-from scripts.extra_helpers.utils import randomize_prompt, arbitrary_priority, prompt_priority
+from scripts.extra_helpers.utils import randomize_prompt, arbitrary_priority, prompt_priority, make_token_list
 
 from pandas import read_csv, isna, concat, DataFrame
 import pandas as pd
@@ -127,6 +127,7 @@ def add_update_tags(*args):
 def update_choices(search_dropdown):
     global lookup_tree
 
+    print("Change was called!")
     new_choices = lookup_tree.query(search_dropdown)
     return gr.Dropdown().update(choices=new_choices, multiselect=True)
 
@@ -180,6 +181,8 @@ def on_ui_tabs():
         with gr.Tab(label="Tag Editor"):
             global database_dict
 
+            token_list = make_token_list(all_sections)
+
             with gr.Row():
                 for file in [csv_file for csv_file in list(database_dict.keys()) if csv_file != "template.csv"]:
                     file_name = file.split(".")[0].replace("_", " ")
@@ -187,10 +190,9 @@ def on_ui_tabs():
                         with gr.Column():
                             with gr.Row():
                                 with gr.Column(scale=7):
-                                    search_dropdown = gr.Dropdown(label="Search By Keyword", choices=[], multiselect=True,
-                                                                  type="value")
-                                    search_dropdown.change(fn=update_choices, inputs=search_dropdown,
-                                                           outputs=search_dropdown)
+                                    search_dropdown = gr.Drpdown(label="Search By Keyword", type="value", interactive=True,
+                                                                 choices=token_list, multiselect=True)
+
                                 with gr.Column(scale=1):
                                     filter_dropdown = gr.Dropdown(choices=["All", "Section", "Multiselect", "Category", "Label", "Tag"],
                                                                   type="value", label="Filter By...", value="All",

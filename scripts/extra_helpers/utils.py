@@ -1,5 +1,27 @@
 from random import shuffle
-from pandas import Dataframe
+import re
+
+
+def make_token_list(section_list) -> list:
+    ret_list = []
+
+    for section in section_list:
+        parse_and_add(ret_list, section.name)
+
+        for tag_dict in section.category_dicts:
+            parse_and_add(ret_list, tag_dict.name)
+
+            for key in tag_dict.keys():
+                    parse_and_add(ret_list, key)
+                    parse_and_add(ret_list, tag_dict[key])
+
+        return ret_list
+
+
+def parse_and_add(curr_tokens, str_to_parse):
+    tokens = [word for word in re.split(r"\W+", str_to_parse) if word]
+    for token in tokens:
+        curr_tokens.append(token)
 
 
 def keys_to_str(key_list, value_dict):
