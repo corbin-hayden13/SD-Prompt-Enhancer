@@ -98,6 +98,11 @@ def update_new_prompt(*args):
     return update_textbox(new_prompt, *args)
 
 
+def update_choices(*args):
+    for arg in args:
+        print(arg)
+
+
 def add_update_tags(*args):
     global database_dict, prompt_enhancer_dir, all_sections
 
@@ -188,6 +193,8 @@ def on_ui_tabs():
                                                                   multiselect=False, interactive=True)
 
                             dataframe = gr.DataFrame(value=database_dict[file], interactive=True)
+                            search_dropdown.change(fn=update_choices, inputs=[search_dropdown, filter_dropdown, dataframe],
+                                                   outputs=dataframe)
 
     return [(sd_prompt_enhancer, "SD Prompt Enhancer", "sd_prompt_enhancer")]
 
