@@ -7,7 +7,7 @@ class Node:
         self.children = children
 
     def __getitem__(self, index):
-        return self.chhildren[index]
+        return self.children[index]
 
     def __setitem__(self, index, value):
         self.children[index] = value
@@ -15,11 +15,49 @@ class Node:
     def append(self, new_node):
         self.children.append(new_node)
 
+    def next_values(self):
+        ret_list = []
+        for child in self.children:
+            ret_list.append(child.value)
+
+        return ret_list
+
 
 class LookupTree:
     def __init__(self, section_list):
         self.section_list = section_list
         self.root = self.build_string_tree()
+
+    def query(self, query_str) -> list:
+        ret_list = []
+        match_to = query_str.lower()
+
+        curr_node = self.root
+        for character in match_to:
+            valid = False
+            for node in curr_node.children:
+                if node.value == character:
+                    valid = True
+                    curr_node = node
+                    break
+
+            if not valid:
+                return ret_list
+
+        if len(curr_node.children) <= 0:
+            return [match_to]
+
+        else:
+            self.recurse_build_matches(match_to, curr_node, ret_list)
+            return ret_list
+
+    def recurse_build_matches(self, match_to, curr_node, found_list):
+        if len(curr_node.children) <= 0:
+            found_list.append(match_to)
+
+        else:
+            for child in curr_node.children:
+                self.recurse_build_matches(match_to + child.value, child, found_list)
 
     def build_string_tree(self) -> Node:
         root = Node()
@@ -44,7 +82,6 @@ class LookupTree:
     def word_to_nodes(self, curr_node, word):
         if len(word) <= 1:
             curr_node.append(Node(value=word))
-            return
 
         else:
             new_node = None
