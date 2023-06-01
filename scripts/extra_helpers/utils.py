@@ -1,4 +1,5 @@
 from random import shuffle
+from pandas import Dataframe
 
 
 def keys_to_str(key_list, value_dict):
@@ -64,3 +65,8 @@ def randomize_prompt(prompt, args, section_list, num_extras) -> str:
     args_list.append(prompt_list)
 
     return parse_arbitrary_args(args_list, section_list, num_extras, True)
+
+
+def search_dataframe(dataframe, keyword=None, filter_by=None) -> Dataframe:
+    pass
+
