@@ -66,7 +66,3 @@ def randomize_prompt(prompt, args, section_list, num_extras) -> str:
 
     return parse_arbitrary_args(args_list, section_list, num_extras, True)
 
-
-def search_dataframe(dataframe, keyword=None, filter_by=None) -> Dataframe:
-    pass
-

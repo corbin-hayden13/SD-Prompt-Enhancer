@@ -1,3 +1,25 @@
+class Node:
+    def __init__(self, value=None, children=[]):
+        self.value = value
+        self.children = children
+
+    def __getitem__(self, index):
+        return self.chhildren[index]
+
+    def __setitem__(self, index, value):
+        self.children[index] = value
+
+    def delete(self, index):
+        del self.children[index]
+
+    def append(self, new_node):
+        self.children.append(new_node)
+
+
+def build_string_tree():
+    pass
+
+
 class TagDict:
     def __init__(self, name, multiselect=True):
         self.name = name
