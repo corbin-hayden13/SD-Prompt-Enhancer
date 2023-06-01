@@ -2,24 +2,31 @@ from random import shuffle
 import re
 
 
+blacklist = ["section", "multiselect", "category", "label", "tag", "", "none", "and"]
+
+
 def make_token_list(section_list) -> list:
     ret_list = []
-
     for section in section_list:
         parse_and_add(ret_list, section.name)
+        print(f"Parsing Section {section.name}")
 
         for tag_dict in section.category_dicts:
             parse_and_add(ret_list, tag_dict.name)
 
             for key in tag_dict.keys():
-                    parse_and_add(ret_list, key)
-                    parse_and_add(ret_list, tag_dict[key])
+                parse_and_add(ret_list, key)
+                parse_and_add(ret_list, tag_dict[key])
 
-        return ret_list
+    return ret_list
 
 
 def parse_and_add(curr_tokens, str_to_parse):
-    tokens = [word for word in re.split(r"\W+", str_to_parse) if word]
+    global blacklist
+
+    words = re.split(r'\b\w*[a-zA-Z]\w*\b', str_to_parse)
+    tokens = [word.strip().lower() for word in words if word.strip().lower() not in blacklist and word.strip().lower()
+              not in curr_tokens]
     for token in tokens:
         curr_tokens.append(token)
 

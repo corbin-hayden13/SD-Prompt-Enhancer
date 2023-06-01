@@ -16,7 +16,7 @@ tags_dict = DataFrame()
 database_dict = {}
 pos_prompt_comp = None
 all_sections = []
-lookup_tree = None
+token_list = []
 prompt_enhancer_dir = scripts.basedir()
 database_file_path = os.path.join(prompt_enhancer_dir, "prompt_enhancer_tags")
 num_extras = 4
@@ -123,16 +123,8 @@ def add_update_tags(*args):
         print(err)
 
 
-def update_choices(search_dropdown):
-    global lookup_tree
-
-    print("Change was called!")
-    new_choices = lookup_tree.query(search_dropdown)
-    return gr.Dropdown().update(choices=new_choices, multiselect=True)
-
-
 def on_ui_tabs():
-    global all_sections, lookup_tree, pos_prompt_comp, num_extras, database_file_path, prompt_enhancer_dir
+    global all_sections, token_list, pos_prompt_comp, num_extras, database_file_path, prompt_enhancer_dir
 
     with gr.Blocks(analytics_enabled=False) as sd_prompt_enhancer:
         with gr.Tab(label="Prompt Enhancer"):
@@ -159,7 +151,7 @@ def on_ui_tabs():
                                               type="value", value="None")
 
             all_sections = format_tag_database()
-            lookup_tree = LookupTree(all_sections)
+            token_list = make_token_list(all_sections)
             ret_list = [priority_radio, pos_prompt_comp, curr_prompt_box, get_curr_prompt_button,
                         new_prompt_box, set_new_prompt_button, apply_tags_button]
             num_extras = len(ret_list)
@@ -180,8 +172,6 @@ def on_ui_tabs():
         with gr.Tab(label="Tag Editor"):
             global database_dict
 
-            token_list = make_token_list(all_sections)
-
             with gr.Row():
                 for file in [csv_file for csv_file in list(database_dict.keys()) if csv_file != "template.csv"]:
                     file_name = file.split(".")[0].replace("_", " ")
@@ -189,8 +179,8 @@ def on_ui_tabs():
                         with gr.Column():
                             with gr.Row():
                                 with gr.Column(scale=7):
-                                    search_dropdown = gr.Drpdown(label="Search By Keyword", type="value", interactive=True,
-                                                                 choices=token_list, multiselect=True)
+                                    search_dropdown = gr.Dropdown(label="Search By Keyword", type="value", interactive=True,
+                                                                  choices=token_list, multiselect=True)
 
                                 with gr.Column(scale=1):
                                     filter_dropdown = gr.Dropdown(choices=["All", "Section", "Multiselect", "Category", "Label", "Tag"],
