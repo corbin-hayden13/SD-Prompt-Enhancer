@@ -151,7 +151,7 @@ def on_ui_tabs():
                                               type="value", value="None")
 
             all_sections = format_tag_database()
-            token_list = make_token_list(all_sections)
+            token_list = make_token_list(all_sections).sort()
             ret_list = [priority_radio, pos_prompt_comp, curr_prompt_box, get_curr_prompt_button,
                         new_prompt_box, set_new_prompt_button, apply_tags_button]
             num_extras = len(ret_list)
