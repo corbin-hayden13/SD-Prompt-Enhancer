@@ -3,7 +3,6 @@ import os
 import modules.scripts as scripts
 from modules.scripts import script_callbacks
 from scripts.extra_helpers.tag_classes import TagSection, TagDict
-from scripts.extra_helpers.tag_classes import LookupTree
 from scripts.extra_helpers.utils import randomize_prompt, arbitrary_priority, prompt_priority, make_token_list
 
 from pandas import read_csv, isna, concat, DataFrame
