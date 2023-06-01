@@ -132,15 +132,19 @@ def on_ui_tabs():
         with gr.Tab(label="Prompt Enhancer"):
             gr.HTML("<br />")
             with gr.Row():
-                curr_prompt_box = gr.Textbox(label="Your Prompt", elem_id="curr_prompt", value="", type="text")
-                get_curr_prompt_button = gr.Button(value="Get Txt2Img Prompt", elem_id="get_curr_prompt_button")
-                get_curr_prompt_button.click(fn=get_txt2img, inputs=pos_prompt_comp, outputs=curr_prompt_box)
+                with gr.Column(scale=7):
+                    curr_prompt_box = gr.Textbox(label="Your Prompt", elem_id="curr_prompt", value="", type="text")
+                with gr.Column(scale=1):
+                    get_curr_prompt_button = gr.Button(value="Get Txt2Img Prompt", elem_id="get_curr_prompt_button")
+                    get_curr_prompt_button.click(fn=get_txt2img, inputs=pos_prompt_comp, outputs=curr_prompt_box)
 
             with gr.Row():
-                new_prompt_box = gr.Textbox(label="New Prompt", elem_id="new_prompt", value="", type="text")
-                with gr.Row():
-                    apply_tags_button = gr.Button(value="Update New Prompt", elem_id="apply_tags_buttons")
-                    set_new_prompt_button = gr.Button(value="Set Txt2Img Prompt", elem_id="set_new_prompt_button")
+                with gr.Column(scale=7):
+                    new_prompt_box = gr.Textbox(label="New Prompt", elem_id="new_prompt", value="", type="text")
+                with gr.Column(scale=1):
+                    with gr.Row():
+                        apply_tags_button = gr.Button(value="Update New Prompt", elem_id="apply_tags_buttons")
+                        set_new_prompt_button = gr.Button(value="Set Txt2Img Prompt", elem_id="set_new_prompt_button")
 
             gr.HTML("<br />")
             with gr.Row():
