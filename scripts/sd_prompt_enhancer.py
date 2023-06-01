@@ -3,7 +3,7 @@ from copy import deepcopy
 
 import modules.scripts as scripts
 from modules.scripts import script_callbacks
-from scripts.extra_helpers.tag_classes import TagSection, TagDict
+from scripts.extra_helpers.tag_classes import TagSection, TagDict, LookupTree
 from scripts.extra_helpers.utils import randomize_prompt, arbitrary_priority, prompt_priority
 
 from pandas import read_csv, isna, concat, DataFrame
@@ -17,6 +17,7 @@ tags_dict = DataFrame()
 database_dict = {}
 pos_prompt_comp = None
 all_sections = []
+lookup_tree = None
 prompt_enhancer_dir = scripts.basedir()
 database_file_path = os.path.join(prompt_enhancer_dir, "prompt_enhancer_tags")
 num_extras = 4
@@ -124,7 +125,7 @@ def add_update_tags(*args):
 
 
 def on_ui_tabs():
-    global all_sections, pos_prompt_comp, num_extras, database_file_path, prompt_enhancer_dir
+    global all_sections, lookup_tree, pos_prompt_comp, num_extras, database_file_path, prompt_enhancer_dir
 
     # custom_css = ".two-thirds{width:66.66% !important;}.one-third{width:33.33% !important;}"
     css = ".equal-width{flex: 2 !important;} .button-width{flex: 1 !important;}"
@@ -153,6 +154,7 @@ def on_ui_tabs():
                                               type="value", value="None")
 
             all_sections = format_tag_database()
+            lookup_tree = LookupTree(all_sections)
             ret_list = [priority_radio, pos_prompt_comp, curr_prompt_box, get_curr_prompt_button,
                         new_prompt_box, set_new_prompt_button, apply_tags_button]
             num_extras = len(ret_list)

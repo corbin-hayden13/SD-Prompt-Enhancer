@@ -1,3 +1,6 @@
+import re
+
+
 class Node:
     def __init__(self, value=None, children=[]):
         self.value = value
@@ -9,14 +12,7 @@ class Node:
     def __setitem__(self, index, value):
         self.children[index] = value
 
-    def delete(self, index):
-        del self.children[index]
-
     def append(self, new_node):
-        for child in self.children:
-            if new_node.value == child.value:
-                return
-
         self.children.append(new_node)
 
 
@@ -29,11 +25,21 @@ class LookupTree:
         root = Node()
 
         for section in self.section_list:
+            self.parse_and_add(root, section.name)
 
             for tag_dict in section.category_dicts:
-                for key in tag_dict.keys():
-                    pass
+                self.parse_and_add(root, tag_dict.name)
 
+                for key in tag_dict.keys():
+                    self.parse_and_add(root, key)
+                    self.parse_and_add(root, tag_dict[key])
+
+        return root
+
+    def parse_and_add(self, root, str_to_parse):
+        tokens = [word for word in re.split(r"\W+", str_to_parse) if word]
+        for token in tokens:
+            self.word_to_nodes(root, token)
 
     def word_to_nodes(self, curr_node, word):
         if len(word) <= 1:
@@ -41,8 +47,16 @@ class LookupTree:
             return
 
         else:
-            new_node = Node(word[0])
-            curr_node.append(new_node)
+            new_node = None
+            for next_node in curr_node.children:
+                if word[0].lower() == next_node.value:
+                    new_node = next_node
+                    break
+
+            if new_node is None:
+                new_node = Node(word[0].lower())
+                curr_node.append(new_node)
+
             self.word_to_nodes(new_node, word[1:])
 
 
@@ -85,3 +99,4 @@ class TagSection:
 
     def __len__(self):
         return len(self.category_dicts)
+
