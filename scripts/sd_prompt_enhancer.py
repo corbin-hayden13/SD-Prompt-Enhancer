@@ -185,7 +185,7 @@ def on_ui_tabs():
                             temp_dropdown = gr.Dropdown(label=section[a].name, choices=section[a].keys(),
                                                         elem_id=section[a].name, type="value",
                                                         multiselect=section[a].multiselect)
-                        ret_list.append(temp_dropdown)
+                            ret_list.append(temp_dropdown)
 
             set_new_prompt_button.click(fn=set_txt2img, inputs=ret_list, outputs=pos_prompt_comp)
             apply_tags_button.click(fn=update_new_prompt, inputs=ret_list, outputs=new_prompt_box)

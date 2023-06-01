@@ -27,8 +27,10 @@ def arbitrary_priority(prompt, args, section_list, num_extras, priority=None) ->
 
 def parse_arbitrary_args(args, section_list, num_extras, is_random=False, priority_section=None) -> str:
     final_list = []
+    starting_ind = num_extras
+    print(f"Args = {args}\n")
     for a in range(len(section_list)):
-        starting_ind = num_extras if a == 0 else len(section_list[a - 1]) + starting_ind
+        print(f"Starting_ind = {starting_ind}\n")
         temp_str = ""
         try:
             for b in range(starting_ind, starting_ind + len(section_list[a])):  # For every valid category...
@@ -40,12 +42,15 @@ def parse_arbitrary_args(args, section_list, num_extras, is_random=False, priori
 
         except IndexError:
             print(f"--- Caught Index Error in utils.py -> parse_arbitrary_args ---\nb = {b} for length of args = {len(args)}\n")
+            temp_str = ", "
 
         temp_str = temp_str[:len(temp_str) - 2]
         if section_list[a].name == priority_section:
             final_list.insert(0, "((" + temp_str + "))")
         else:
             final_list.append(temp_str)
+
+        starting_ind += len(section_list[a])
 
     if is_random:
         shuffle(final_list)
