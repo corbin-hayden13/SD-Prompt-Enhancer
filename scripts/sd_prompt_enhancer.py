@@ -1,5 +1,4 @@
 import os
-from copy import deepcopy
 
 import modules.scripts as scripts
 from modules.scripts import script_callbacks
