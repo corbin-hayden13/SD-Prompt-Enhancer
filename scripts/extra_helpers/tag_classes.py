@@ -13,11 +13,37 @@ class Node:
         del self.children[index]
 
     def append(self, new_node):
+        for child in self.children:
+            if new_node.value == child.value:
+                return
+
         self.children.append(new_node)
 
 
-def build_string_tree():
-    pass
+class LookupTree:
+    def __init__(self, section_list):
+        self.section_list = section_list
+        self.root = self.build_string_tree()
+
+    def build_string_tree(self) -> Node:
+        root = Node()
+
+        for section in self.section_list:
+
+            for tag_dict in section.category_dicts:
+                for key in tag_dict.keys():
+                    pass
+
+
+    def word_to_nodes(self, curr_node, word):
+        if len(word) <= 1:
+            curr_node.append(Node(value=word))
+            return
+
+        else:
+            new_node = Node(word[0])
+            curr_node.append(new_node)
+            self.word_to_nodes(new_node, word[1:])
 
 
 class TagDict:
