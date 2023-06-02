@@ -9,7 +9,6 @@ def make_token_list(section_list) -> list:
     ret_list = []
     for section in section_list:
         parse_and_add(ret_list, section.name)
-        print(f"Parsing Section {section.name}")
 
         for tag_dict in section.category_dicts:
             parse_and_add(ret_list, tag_dict.name)
