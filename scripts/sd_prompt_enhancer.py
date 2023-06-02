@@ -103,7 +103,7 @@ def update_choices(*args):
     global database_dict
 
     if len(args[0]) <= 0:
-        return gr.Dataframe().update(show_label=False)
+        return gr.Dataframe().update(value=database_dict[args[2]["label"]])
 
     if args[1] == "All":
         keys = ["Section", "Category", "Label", "Tag"]
@@ -120,8 +120,8 @@ def update_choices(*args):
     for a in range(len(ref_dataframe["Section"])):
         found = False
         for key in keys:
-            for tag in args[1]:
-                if tag.lower() in ref_dataframe[key][a]:
+            for tag in args[0]:
+                if tag.lower() in str(ref_dataframe[key][a]).lower():
                     found = True
                     break
 
@@ -132,7 +132,7 @@ def update_choices(*args):
                 new_dataframe[key].append(ref_dataframe[key][a])
             new_dataframe["Multiselect"].append(ref_dataframe["Multiselect"][a])
 
-    return gr.Dataframe().update(value=pd.DataFrame(new_dataframe))
+    return gr.DataFrame().update(value=pd.DataFrame(new_dataframe))
 
 
 def add_update_tags(*args):
