@@ -6,6 +6,7 @@ from scripts.extra_helpers.tag_classes import TagSection, TagDict
 from scripts.extra_helpers.utils import randomize_prompt, arbitrary_priority, prompt_priority, make_token_list
 
 from pandas import read_csv, isna, concat, DataFrame
+from copy import deepcopy
 import pandas as pd
 import numpy as np
 import gradio as gr
@@ -99,8 +100,39 @@ def update_new_prompt(*args):
 
 
 def update_choices(*args):
-    for arg in args:
-        print(arg)
+    global database_dict
+
+    if len(args[0]) <= 0:
+        return gr.Dataframe().update(show_label=False)
+
+    if args[1] == "All":
+        keys = ["Section", "Category", "Label", "Tag"]
+    else: keys = list(args[1])
+
+    ref_dataframe = database_dict[args[2]]
+    new_dataframe = {
+        "Section": [],
+        "Multiselect": [],
+        "Category": [],
+        "Label": [],
+        "Tag": []
+    }
+    for a in range(len(ref_dataframe["Section"])):
+        found = False
+        for key in keys:
+            for tag in args[1]:
+                if tag.lower() in ref_dataframe[key][a]:
+                    found = True
+                    break
+
+            if found: break
+
+        if found:
+            for key in keys:
+                new_dataframe[key].append(ref_dataframe[key][a])
+            new_dataframe["Multiselect"].append(ref_dataframe["Multiselect"][a])
+
+    return gr.Dataframe.update(value=pd.DataFrame(new_dataframe))
 
 
 def add_update_tags(*args):
@@ -156,7 +188,7 @@ def on_ui_tabs():
                                               type="value", value="None")
 
             all_sections = format_tag_database()
-            token_list = make_token_list(all_sections).sort()
+            token_list = sorted(make_token_list(all_sections))
             ret_list = [priority_radio, pos_prompt_comp, curr_prompt_box, get_curr_prompt_button,
                         new_prompt_box, set_new_prompt_button, apply_tags_button]
             num_extras = len(ret_list)
@@ -193,7 +225,8 @@ def on_ui_tabs():
                                                                   multiselect=False, interactive=True)
 
                             dataframe = gr.DataFrame(value=database_dict[file], interactive=True)
-                            search_dropdown.change(fn=update_choices, inputs=[search_dropdown, filter_dropdown, dataframe],
+                            file_name = gr.Label(value=file, visible=False)
+                            search_dropdown.change(fn=update_choices, inputs=[search_dropdown, filter_dropdown, file_name],
                                                    outputs=dataframe)
 
     return [(sd_prompt_enhancer, "SD Prompt Enhancer", "sd_prompt_enhancer")]
