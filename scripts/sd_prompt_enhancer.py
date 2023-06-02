@@ -42,7 +42,8 @@ def format_tag_database():
 
     section_name_list = []
     for a in range(len(tags_dict["Section"])):
-        if tags_dict["Section"][a] not in section_name_list:
+        if tags_dict["Section"][a] not in section_name_list and type(tags_dict["Section"][a]) != float:
+            print(f"  - Adding new section: {tags_dict['Section'][a]}, type as: {type(tags_dict['Section'][a])}")
             section_name_list.append(tags_dict["Section"][a])
 
     sections_list = []
