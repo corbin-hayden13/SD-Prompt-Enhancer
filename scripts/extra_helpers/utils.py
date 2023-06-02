@@ -24,7 +24,12 @@ def make_token_list(section_list) -> list:
 def parse_and_add(curr_tokens, str_to_parse):
     global blacklist
 
-    words = re.findall(r'\b\w*[a-zA-Z]\w*\b', str_to_parse)
+    try:
+        words = re.findall(r'\b\w*[a-zA-Z]\w*\b', str_to_parse)
+    except TypeError:
+        print(f"Type error in utils.py -> parse_and_add: caused by empty cells in between populated cells in csv file")
+        return
+
     tokens = [word.strip().lower() for word in words if word.strip().lower() not in blacklist and word.strip().lower()
               not in curr_tokens]
     for token in tokens:
