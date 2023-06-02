@@ -109,7 +109,7 @@ def update_choices(*args):
         keys = ["Section", "Category", "Label", "Tag"]
     else: keys = list(args[1])
 
-    ref_dataframe = database_dict[args[2]]
+    ref_dataframe = database_dict[args[2]["label"]]
     new_dataframe = {
         "Section": [],
         "Multiselect": [],
@@ -132,7 +132,7 @@ def update_choices(*args):
                 new_dataframe[key].append(ref_dataframe[key][a])
             new_dataframe["Multiselect"].append(ref_dataframe["Multiselect"][a])
 
-    return gr.Dataframe.update(value=pd.DataFrame(new_dataframe))
+    return gr.Dataframe().update(value=pd.DataFrame(new_dataframe))
 
 
 def add_update_tags(*args):
