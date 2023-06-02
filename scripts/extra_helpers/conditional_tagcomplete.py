@@ -12,7 +12,7 @@ def open_if_exists() -> list:
 
     database_file_path = os.path.join(scripts.basedir(), r"a1111-sd-webui-tagcomplete\tags")
     if not os.path.isdir(database_file_path):
-        return None
+        return []
 
     databases = []
     for file in os.listdir(database_file_path):
