@@ -42,17 +42,17 @@ Image Attributes,TRUE,extras,portrait,"((upper body:1.2)), portrait"
 Image Attributes,TRUE,extras,black & white,"monochrome, greyscale, B&W, Black and White, black&white"
 Camera Settings,FALSE,camera shots,null,null
 Camera Settings,FALSE,camera shots,none,null
-Camera Settings,FALSE,camera shots,ews,Extreme Wide Shot
-Camera Settings,FALSE,camera shots,ls,Long Shot
-Camera Settings,FALSE,camera shots,ws,Wide Shot
-Camera Settings,FALSE,camera shots,mls,Medium Long Shot
-Camera Settings,FALSE,camera shots,mws,Medium Wide Shot
-Camera Settings,FALSE,camera shots,cowboy,Cowboy Shot
-Camera Settings,FALSE,camera shots,ms,Medium Shot
-Camera Settings,FALSE,camera shots,mcu,Medium Close Up
-Camera Settings,FALSE,camera shots,cu,Close Up
-Camera Settings,FALSE,camera shots,ecu,Extreme Close Up
-Camera Settings,FALSE,camera shots,est.,Establishing Shot
+Camera Settings,FALSE,camera shots,Extreme Wide Shot,Extreme Wide Shot
+Camera Settings,FALSE,camera shots,Long Shot,Long Shot
+Camera Settings,FALSE,camera shots,Wide Shot,Wide Shot
+Camera Settings,FALSE,camera shots,Medium Long Shot,Medium Long Shot
+Camera Settings,FALSE,camera shots,Medium Wide Shot,Medium Wide Shot
+Camera Settings,FALSE,camera shots,Cowboy Shot,Cowboy Shot
+Camera Settings,FALSE,camera shots,Medium Shot,Medium Shot
+Camera Settings,FALSE,camera shots,Medium Close Up,Medium Close Up
+Camera Settings,FALSE,camera shots,Close Up,Close Up
+Camera Settings,FALSE,camera shots,Extreme Close Up,Extreme Close Up
+Camera Settings,FALSE,camera shots,Establishing Shot,Establishing Shot
 Camera Settings,FALSE,camera framing,null,null
 Camera Settings,FALSE,camera framing,none,null
 Camera Settings,FALSE,camera framing,single,Single Shot
