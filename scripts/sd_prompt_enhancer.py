@@ -186,7 +186,7 @@ def on_ui_tabs():
                         apply_tags_button = gr.Button(value="Update New Prompt", elem_id="apply_tags_buttons")
                         set_new_prompt_button = gr.Button(value="Set Txt2Img Prompt", elem_id="set_new_prompt_button")
 
-            with FormRow(variant='compact', elem_id="txt2img_extra_networks", visible=True) as extra_networks:
+            with FormRow(variant='compact', elem_id="txt2img_extra_networks", visible=False) as extra_networks:
                 from modules import ui_extra_networks
                 extra_networks_button = ToolButton(value=extra_networks_symbol, elem_id=f"prompt_enhancer_extra_networks")
                 extra_networks_ui = ui_extra_networks.create_ui(extra_networks, extra_networks_button, 'prompt_enhancer')
@@ -205,15 +205,20 @@ def on_ui_tabs():
                         new_prompt_box, set_new_prompt_button, apply_tags_button]
             num_extras = len(ret_list)
 
-            with gr.Row():
-                for section in all_sections:
-                    with gr.Accordion(label=f"{section.name}", open=False, elem_id="columnAccordion"):
+            for a in range(0, len(all_sections), 5):
+                for b in range(5):
+                    try:
+                        test = all_sections[a + b].name
+                    except IndexError:
+                        break
+
+                    with gr.Accordion(label=f"{all_sections[a + b].name}", open=False, elem_id="columnAccordion"):
                         with gr.Column():
-                            # gr.Markdown(f"### {section.name}")
-                            for a in range(len(section)):  # Categories
-                                temp_dropdown = gr.Dropdown(label=section[a].name, choices=section[a].keys(),
-                                                            elem_id=section[a].name, type="value",
-                                                            multiselect=section[a].multiselect)
+                            for c in range(len(all_sections[a + b].name)):  # Categories
+                                temp_dropdown = gr.Dropdown(label=all_sections[a + b].name[c].name,
+                                                            choices=all_sections[a + b].name[c].keys(),
+                                                            elem_id=all_sections[a + b].name[c].name, type="value",
+                                                            multiselect=all_sections[a + b].name[c].multiselect)
                                 ret_list.append(temp_dropdown)
 
             set_new_prompt_button.click(fn=set_txt2img, inputs=ret_list, outputs=pos_prompt_comp)
