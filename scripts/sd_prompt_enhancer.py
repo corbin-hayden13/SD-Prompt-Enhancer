@@ -2,6 +2,9 @@ import os
 
 import modules.scripts as scripts
 from modules.scripts import script_callbacks
+from modules.ui import extra_networks_symbol, create_output_panel
+from modules.ui_components import FormRow, ToolButton
+from modules.shared import opts
 from scripts.extra_helpers.tag_classes import TagSection, TagDict
 from scripts.extra_helpers.utils import randomize_prompt, arbitrary_priority, prompt_priority, make_token_list
 
@@ -163,7 +166,9 @@ def add_update_tags(*args):
 def on_ui_tabs():
     global all_sections, token_list, pos_prompt_comp, num_extras, database_file_path, prompt_enhancer_dir
 
-    with gr.Blocks(analytics_enabled=False) as sd_prompt_enhancer:
+    css = "# columnAccordion .label {font-weight: bold !important; font-size: 10vw !important}"
+
+    with gr.Blocks(analytics_enabled=False, css=css) as sd_prompt_enhancer:
         with gr.Tab(label="Prompt Enhancer"):
             gr.HTML("<br />")
             with gr.Row():
@@ -181,6 +186,13 @@ def on_ui_tabs():
                         apply_tags_button = gr.Button(value="Update New Prompt", elem_id="apply_tags_buttons")
                         set_new_prompt_button = gr.Button(value="Set Txt2Img Prompt", elem_id="set_new_prompt_button")
 
+            with FormRow(variant='compact', elem_id="txt2img_extra_networks", visible=True) as extra_networks:
+                from modules import ui_extra_networks
+                extra_networks_button = ToolButton(value=extra_networks_symbol, elem_id=f"prompt_enhancer_extra_networks")
+                extra_networks_ui = ui_extra_networks.create_ui(extra_networks, extra_networks_button, 'prompt_enhancer')
+                txt2img_gallery, _, _, _ = create_output_panel("txt2img", opts.outdir_txt2img_samples)
+                ui_extra_networks.setup_ui(extra_networks_ui, txt2img_gallery)
+
             gr.HTML("<br />")
             with gr.Row():
                 with gr.Column():
@@ -195,13 +207,14 @@ def on_ui_tabs():
 
             with gr.Row():
                 for section in all_sections:
-                    with gr.Column():
-                        gr.Markdown(f"### {section.name}")
-                        for a in range(len(section)):  # Categories
-                            temp_dropdown = gr.Dropdown(label=section[a].name, choices=section[a].keys(),
-                                                        elem_id=section[a].name, type="value",
-                                                        multiselect=section[a].multiselect)
-                            ret_list.append(temp_dropdown)
+                    with gr.Accordion(label=f"{section.name}", open=False, elem_id="columnAccordion"):
+                        with gr.Column():
+                            # gr.Markdown(f"### {section.name}")
+                            for a in range(len(section)):  # Categories
+                                temp_dropdown = gr.Dropdown(label=section[a].name, choices=section[a].keys(),
+                                                            elem_id=section[a].name, type="value",
+                                                            multiselect=section[a].multiselect)
+                                ret_list.append(temp_dropdown)
 
             set_new_prompt_button.click(fn=set_txt2img, inputs=ret_list, outputs=pos_prompt_comp)
             apply_tags_button.click(fn=update_new_prompt, inputs=ret_list, outputs=new_prompt_box)
