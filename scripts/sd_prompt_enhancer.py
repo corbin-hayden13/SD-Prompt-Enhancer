@@ -206,20 +206,21 @@ def on_ui_tabs():
             num_extras = len(ret_list)
 
             for a in range(0, len(all_sections), 5):
-                for b in range(5):
-                    try:
-                        test = all_sections[a + b].name
-                    except IndexError:
-                        break
+                with gr.Row():
+                    for b in range(5):
+                        try:
+                            test = all_sections[a + b].name
+                        except IndexError:
+                            break
 
-                    with gr.Accordion(label=f"{all_sections[a + b].name}", open=False, elem_id="columnAccordion"):
-                        with gr.Column():
-                            for c in range(len(all_sections[a + b].name)):  # Categories
-                                temp_dropdown = gr.Dropdown(label=all_sections[a + b].name[c].name,
-                                                            choices=all_sections[a + b].name[c].keys(),
-                                                            elem_id=all_sections[a + b].name[c].name, type="value",
-                                                            multiselect=all_sections[a + b].name[c].multiselect)
-                                ret_list.append(temp_dropdown)
+                        with gr.Accordion(label=f"{all_sections[a + b].name}", open=False, elem_id="columnAccordion"):
+                            with gr.Column():
+                                for c in range(len(all_sections[a + b])):  # Categories
+                                    temp_dropdown = gr.Dropdown(label=all_sections[a + b][c].name,
+                                                                choices=all_sections[a + b][c].keys(),
+                                                                elem_id=all_sections[a + b][c].name, type="value",
+                                                                multiselect=all_sections[a + b][c].multiselect)
+                                    ret_list.append(temp_dropdown)
 
             set_new_prompt_button.click(fn=set_txt2img, inputs=ret_list, outputs=pos_prompt_comp)
             apply_tags_button.click(fn=update_new_prompt, inputs=ret_list, outputs=new_prompt_box)
