@@ -60,7 +60,7 @@ def arbitrary_priority(prompt, args, section_list, num_extras, priority=None) ->
     return prompt + ", " + parse_arbitrary_args(args, section_list, num_extras, priority_section=priority)
 
 
-def parse_arbitrary_args(args, section_list, num_extras, is_random=False, priority_section=None) -> str:
+def parse_arbitrary_args(args, section_list, num_extras, priority_section=None) -> str:
     final_list = []
     starting_ind = num_extras
     print(f"Args = {args}\n")
@@ -87,18 +87,21 @@ def parse_arbitrary_args(args, section_list, num_extras, is_random=False, priori
 
         starting_ind += len(section_list[a])
 
-    if is_random:
-        shuffle(final_list)
+    final_str = list_to_str(final_list).replace(" ,", "")
 
-    return list_to_str(final_list).replace(" ,", "")
+    return final_str
 
 
 def randomize_prompt(prompt, args, section_list, num_extras) -> str:
     prompt_list = prompt if isinstance(prompt, list) else [a.strip() for a in prompt.split(",")]
-    args_list = list(args)
-    args_list.append(prompt_list)
 
-    return parse_arbitrary_args(args_list, section_list, num_extras, True)
+    parsed_str = parse_arbitrary_args(list(args), section_list, num_extras)
+    parsed_list = [a.strip() for a in parsed_str.split(",")]
+
+    prompt_list.extend(parsed_list)
+    shuffle(prompt_list)
+
+    return list_to_str(prompt_list).replace(" ,", "")
 
 
 def clear_dropdowns(*args):
