@@ -1,5 +1,6 @@
 from random import shuffle
 import re
+import gradio as gr
 
 
 blacklist = ["section", "multiselect", "category", "label", "tag", "", "none", "and"]
@@ -98,4 +99,16 @@ def randomize_prompt(prompt, args, section_list, num_extras) -> str:
     args_list.append(prompt_list)
 
     return parse_arbitrary_args(args_list, section_list, num_extras, True)
+
+
+def clear_dropdowns(*args):
+    ret_list = []
+
+    for dropdown in args:
+        if type(dropdown) == str:
+            ret_list.append(gr.Dropdown().update(value=""))
+        else:
+            ret_list.append(gr.Dropdown().update(value=[]))
+
+    return ret_list
 

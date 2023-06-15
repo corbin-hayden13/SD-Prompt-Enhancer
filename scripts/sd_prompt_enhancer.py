@@ -6,10 +6,9 @@ from modules.ui import extra_networks_symbol, create_output_panel
 from modules.ui_components import FormRow, ToolButton
 from modules.shared import opts
 from scripts.extra_helpers.tag_classes import TagSection, TagDict
-from scripts.extra_helpers.utils import randomize_prompt, arbitrary_priority, prompt_priority, make_token_list
+from scripts.extra_helpers.utils import randomize_prompt, arbitrary_priority, prompt_priority, make_token_list, clear_dropdowns
 
 from pandas import read_csv, isna, concat, DataFrame
-from copy import deepcopy
 import pandas as pd
 import numpy as np
 import gradio as gr
@@ -24,6 +23,7 @@ token_list = []
 prompt_enhancer_dir = scripts.basedir()
 database_file_path = os.path.join(prompt_enhancer_dir, "prompt_enhancer_tags")
 num_extras = 4
+dropdowns_displayed = False
 
 
 def read_all_databases():
@@ -143,7 +143,6 @@ def add_update_tags(*args):
 
     table_name = args[0]["label"]
     arg_offset = 5 if args[1] == "New Section" or args[2] == "New Category" else 0
-    print(f"args[1] = \"{args[1]}\"\narg_offset = {arg_offset}\nSection is now = {str(args[1 + arg_offset])}")
     new_tag = {
         "Section":     [str(args[1 + arg_offset])],
         "Multiselect": [True if str(args[3 + arg_offset]) == "true" else False],
@@ -195,15 +194,22 @@ def on_ui_tabs():
 
             gr.HTML("<br />")
             with gr.Row():
-                with gr.Column():
+                with gr.Column(scale=7):
                     priority_radio = gr.Radio(label="Prioritize...", choices=priorities, elem_id="priorities",
                                               type="value", value="None")
+                with gr.Column(scale=2):
+                    clear_dropdowns_button = gr.Button(value="Clear All Dropdown Fields", elem_id="dropdown_clear")
 
             all_sections = format_tag_database()
             token_list = sorted(make_token_list(all_sections))
-            ret_list = [priority_radio, pos_prompt_comp, curr_prompt_box, get_curr_prompt_button,
-                        new_prompt_box, set_new_prompt_button, apply_tags_button]
+            ret_list = [priority_radio, pos_prompt_comp, curr_prompt_box, new_prompt_box]
             num_extras = len(ret_list)
+
+            with gr.Row():
+                with gr.Column(scale=7):
+                    pass  # List all shown sections
+                with gr.Column(scale=2):
+                    pass  # Search all known tags
 
             for a in range(0, len(all_sections), 5):
                 with gr.Row():
@@ -213,7 +219,7 @@ def on_ui_tabs():
                         except IndexError:
                             break
 
-                        with gr.Accordion(label=f"{all_sections[a + b].name}", open=False, elem_id="columnAccordion"):
+                        with gr.Accordion(label=f"{all_sections[a + b].name}", open=False):
                             with gr.Column():
                                 for c in range(len(all_sections[a + b])):  # Categories
                                     temp_dropdown = gr.Dropdown(label=all_sections[a + b][c].name,
@@ -224,6 +230,7 @@ def on_ui_tabs():
 
             set_new_prompt_button.click(fn=set_txt2img, inputs=ret_list, outputs=pos_prompt_comp)
             apply_tags_button.click(fn=update_new_prompt, inputs=ret_list, outputs=new_prompt_box)
+            clear_dropdowns_button.click(fn=clear_dropdowns, inputs=ret_list, outputs=ret_list)
 
         with gr.Tab(label="Tag Editor"):
             global database_dict
@@ -281,3 +288,4 @@ class PromptEnhancerScript(scripts.Script):
 
 
 script_callbacks.on_ui_tabs(on_ui_tabs)
+
