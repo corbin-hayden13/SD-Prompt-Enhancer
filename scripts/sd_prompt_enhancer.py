@@ -90,14 +90,12 @@ def get_txt2img(prompt):
 
 
 def set_txt2img(*args):
-    global num_extras
-    new_prompt = args[4]
+    new_prompt = args[3]
     new_prompt = new_prompt.replace(" ,", "")
     return gr.Textbox().update(value=new_prompt)
 
 
 def update_new_prompt(*args):
-    global num_extras
     new_prompt = args[2]
     return update_textbox(new_prompt, *args)
 
