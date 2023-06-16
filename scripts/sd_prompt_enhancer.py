@@ -24,6 +24,7 @@ prompt_enhancer_dir = scripts.basedir()
 database_file_path = os.path.join(prompt_enhancer_dir, "prompt_enhancer_tags")
 num_extras = 4
 dropdowns_displayed = False
+extra_networks_visible = False
 
 
 def read_all_databases():
@@ -170,10 +171,15 @@ def on_ui_tabs():
             gr.HTML("<br />")
             with gr.Row():
                 with gr.Column(scale=7):
-                    curr_prompt_box = gr.Textbox(label="Your Prompt", elem_id="curr_prompt", value="", type="text")
+                    curr_prompt_box = gr.Textbox(label="Your Prompt", elem_id="sd_enhancer_prompt", value="", type="text")
                 with gr.Column(scale=1):
-                    get_curr_prompt_button = gr.Button(value="Get Txt2Img Prompt", elem_id="get_curr_prompt_button")
-                    get_curr_prompt_button.click(fn=get_txt2img, inputs=pos_prompt_comp, outputs=curr_prompt_box)
+                    with gr.Row():
+                        with gr.Column(scale=7):
+                            get_curr_prompt_button = gr.Button(value="Get Txt2Img Prompt", elem_id="get_curr_prompt_button")
+                            get_curr_prompt_button.click(fn=get_txt2img, inputs=pos_prompt_comp, outputs=curr_prompt_box)
+
+                    with gr.Column(scale=1):
+                        extra_networks_button = ToolButton(value=extra_networks_symbol, elem_id="extra_networks_toggle")
 
             with gr.Row():
                 with gr.Column(scale=7):
@@ -183,12 +189,19 @@ def on_ui_tabs():
                         apply_tags_button = gr.Button(value="Update New Prompt", elem_id="apply_tags_buttons")
                         set_new_prompt_button = gr.Button(value="Set Txt2Img Prompt", elem_id="set_new_prompt_button")
 
-            with FormRow(variant='compact', elem_id="txt2img_extra_networks", visible=False) as extra_networks:
+            with FormRow(variant='compact', elem_id="sd_enhancer_extra_networks", visible=False) as extra_networks_formrow:
                 from modules import ui_extra_networks
-                extra_networks_button = ToolButton(value=extra_networks_symbol, elem_id=f"prompt_enhancer_extra_networks")
-                extra_networks_ui = ui_extra_networks.create_ui(extra_networks, extra_networks_button, 'prompt_enhancer')
-                txt2img_gallery, _, _, _ = create_output_panel("txt2img", opts.outdir_txt2img_samples)
-                ui_extra_networks.setup_ui(extra_networks_ui, txt2img_gallery)
+                extra_networks_ui = ui_extra_networks.create_ui(extra_networks_formrow, extra_networks_button,
+                                                                'sd_enhancer')
+
+            def toggle_extra_networks():
+                global extra_networks_visible
+
+                extra_networks_visible = not extra_networks_visible
+                print(extra_networks_visible)
+                return gr.update(visible=extra_networks_visible)
+
+            extra_networks_button.click(fn=toggle_extra_networks, outputs=extra_networks_formrow)
 
             gr.HTML("<br />")
             with gr.Row():

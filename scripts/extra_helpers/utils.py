@@ -115,3 +115,51 @@ def clear_dropdowns(*args):
 
     return ret_list
 
+
+def setup_ui(ui, gallery):
+    def save_preview(index, images, filename):
+        if len(images) == 0:
+            print("There is no image in gallery to save as a preview.")
+            return [page.create_html(ui.tabname) for page in ui.stored_extra_pages]
+        index = int(index)
+        index = 0 if index < 0 else index
+        index = len(images) - 1 if index >= len(images) else index
+        img_info = images[index if index >= 0 else 0]
+        image = image_from_url_text(img_info)
+        is_allowed = False
+        for extra_page in ui.stored_extra_pages:
+            if any(path_is_parent(x, filename) for x in extra_page.allowed_directories_for_previews()):
+                is_allowed = True
+                break
+        assert is_allowed, f'writing to {filename} is not allowed'
+        image.save(filename)
+        shared.log.info(f'Extra network save preview: {filename}')
+        return [page.create_html(ui.tabname) for page in ui.stored_extra_pages]
+
+    ui.button_save_preview.click(
+        fn=save_preview,
+        _js="function(x, y, z){return [selected_gallery_index(), y, z]}",
+        inputs=[ui.preview_target_filename, gallery, ui.preview_target_filename],
+        outputs=[*ui.pages]
+    )
+
+    # write description to a file
+    def save_description(filename,descrip):
+        lastDotIndex = filename.rindex('.')
+        filename = filename[0:lastDotIndex]+".description.txt"
+        if descrip != "":
+            try:
+                with open(filename,'w', encoding='utf-8') as f:
+                    f.write(descrip)
+                shared.log.info(f'Extra network save description: {filename}')
+            except Exception as e:
+                shared.log.error(f'Extra network save preview: {filename} {e}')
+        return [page.create_html(ui.tabname) for page in ui.stored_extra_pages]
+
+    ui.button_save_description.click(
+        fn=save_description,
+        _js="function(x,y){return [x,y]}",
+        inputs=[ui.description_target_filename, ui.description_input],
+        outputs=[*ui.pages]
+    )
+
