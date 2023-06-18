@@ -2,7 +2,7 @@ import os
 
 import modules.scripts as scripts
 from modules.scripts import script_callbacks
-from modules.ui import extra_networks_symbol, create_output_panel
+from modules.ui import extra_networks_symbol
 from modules.ui_components import FormRow, ToolButton
 from modules.shared import opts
 from scripts.extra_helpers.tag_classes import TagSection, TagDict
